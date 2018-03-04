@@ -55,6 +55,11 @@ func (f *HostFlow) UniqKey() string {
 	return fmt.Sprintf("%d-%s-%s", f.Direction, f.Local, f.Peer)
 }
 
+// ReplaceLookupedName replaces f.Addr into lookuped name.
+func (f *HostFlow) ReplaceLookupedName() {
+	f.Peer.Addr = netutil.ResolveAddr(f.Peer.Addr)
+}
+
 // HostFlows represents a group of host flow by unique key.
 type HostFlows map[string]*HostFlow
 
