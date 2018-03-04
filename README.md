@@ -18,6 +18,39 @@ localhost:80         <--    10.0.2.10:80          120
 localhost:80         <--    10.0.2.11:80          202
 ```
 
+### JSON format
+
+```shell
+$ lstf -n --json | jq -r -M '.'
+[
+  {
+    "direction": "active",
+    "local": {
+      "Addr": "localhost",
+      "Port": "many"
+    },
+    "peer": {
+      "addr": "10.0.100.1",
+      "port": "3306"
+    },
+    "connections": 20
+  },
+  {
+    "direction": "passive",
+    "local": {
+      "addr": "localhost",
+      "port": "80"
+    },
+    "peer": {
+      "addr": "10.0.200.1",
+      "port": "many"
+    },
+    "connections": 27
+  },
+  ...
+]
+```
+
 ## License
 
 [MIT][license]

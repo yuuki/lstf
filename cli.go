@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -29,6 +30,7 @@ func (c *CLI) Run(args []string) int {
 
 	var (
 		numeric bool
+		json    bool
 		ver     bool
 	)
 	flags := flag.NewFlagSet(name, flag.ContinueOnError)
@@ -38,6 +40,7 @@ func (c *CLI) Run(args []string) int {
 	}
 	flags.BoolVar(&numeric, "n", false, "")
 	flags.BoolVar(&numeric, "numeric", false, "")
+	flags.BoolVar(&json, "json", false, "")
 	flags.BoolVar(&ver, "version", false, "")
 	if err := flags.Parse(args[1:]); err != nil {
 		return exitCodeErr
@@ -54,7 +57,14 @@ func (c *CLI) Run(args []string) int {
 		return exitCodeErr
 	}
 
-	c.PrintHostFlows(flows, numeric)
+	if json {
+		if err := c.PrintHostFlowsAsJSON(flows, numeric); err != nil {
+			log.Printf("failed to print json: %v", err)
+			return exitCodeErr
+		}
+	} else {
+		c.PrintHostFlows(flows, numeric)
+	}
 
 	return exitCodeOK
 }
@@ -73,12 +83,28 @@ func (c *CLI) PrintHostFlows(flows tcpflow.HostFlows, numeric bool) {
 	tw.Flush()
 }
 
+// PrintHostFlowsAsJSON prints the host flows as json format.
+func (c *CLI) PrintHostFlowsAsJSON(flows tcpflow.HostFlows, numeric bool) error {
+	for _, flow := range flows {
+		if !numeric {
+			flow.ReplaceLookupedName()
+		}
+	}
+	b, err := json.Marshal(flows)
+	if err != nil {
+		return err
+	}
+	c.outStream.Write(b)
+	return nil
+}
+
 var helpText = `Usage: lstf [options]
 
   Print host flows between localhost and other hosts
 
 Options:
   --numeric, -n             show numerical addresses instead of trying to determine symbolic host names.
+  --json                    print results as json format
   --version, -v	            print version
   --help, -h                print help
 `
