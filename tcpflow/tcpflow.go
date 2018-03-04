@@ -1,6 +1,8 @@
 package tcpflow
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 
@@ -20,6 +22,19 @@ const (
 	FlowPassive
 )
 
+// MarshalJSON returns human readable `mode` format.
+func (c FlowDirection) MarshalJSON() ([]byte, error) {
+	switch c {
+	case FlowActive:
+		return json.Marshal("active")
+	case FlowPassive:
+		return json.Marshal("passive")
+	case FlowUnknown:
+		return json.Marshal("unknown")
+	}
+	return nil, errors.New("unreachable code")
+}
+
 // AddrPort are <addr>:<port>
 type AddrPort struct {
 	Addr string `json:"addr"`
@@ -33,10 +48,10 @@ func (a *AddrPort) String() string {
 
 // HostFlow represents a `host flow`.
 type HostFlow struct {
-	Direction   FlowDirection
-	Local       *AddrPort `json:"local"`
-	Peer        *AddrPort `json:"peer"`
-	Connections int64     `json:"connections"`
+	Direction   FlowDirection `json:"direction"`
+	Local       *AddrPort     `json:"local"`
+	Peer        *AddrPort     `json:"peer"`
+	Connections int64         `json:"connections"`
 }
 
 // String returns the string representation of HostFlow.
@@ -62,6 +77,15 @@ func (f *HostFlow) ReplaceLookupedName() {
 
 // HostFlows represents a group of host flow by unique key.
 type HostFlows map[string]*HostFlow
+
+// MarshalJSON converts map into list.
+func (hf HostFlows) MarshalJSON() ([]byte, error) {
+	list := make([]HostFlow, 0, len(hf))
+	for _, f := range hf {
+		list = append(list, *f)
+	}
+	return json.Marshal(list)
+}
 
 func (hf HostFlows) insert(flow *HostFlow) {
 	key := flow.UniqKey()
