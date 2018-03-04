@@ -33,18 +33,19 @@ func (a *AddrPort) String() string {
 
 // HostFlow represents a `host flow`.
 type HostFlow struct {
-	Direction FlowDirection
-	Local     *AddrPort `json:"local"`
-	Peer      *AddrPort `json:"peer"`
+	Direction   FlowDirection
+	Local       *AddrPort `json:"local"`
+	Peer        *AddrPort `json:"peer"`
+	Connections int64     `json:"connections"`
 }
 
 // String returns the string representation of HostFlow.
 func (f *HostFlow) String() string {
 	switch f.Direction {
 	case FlowActive:
-		return fmt.Sprintf("%s\t --> \t%s", f.Local, f.Peer)
+		return fmt.Sprintf("%s\t --> \t%s \t%d", f.Local, f.Peer, f.Connections)
 	case FlowPassive:
-		return fmt.Sprintf("%s\t <-- \t%s", f.Local, f.Peer)
+		return fmt.Sprintf("%s\t <-- \t%s \t%d", f.Local, f.Peer, f.Connections)
 	}
 	return ""
 }
@@ -61,8 +62,8 @@ func (hf HostFlows) insert(flow *HostFlow) {
 	key := flow.UniqKey()
 	if _, ok := hf[key]; !ok {
 		hf[key] = flow
-		return
 	}
+	hf[key].Connections++
 	return
 }
 
