@@ -28,13 +28,16 @@ func (c *CLI) Run(args []string) int {
 	log.SetOutput(c.errStream)
 
 	var (
-		ver bool
+		numeric bool
+		ver     bool
 	)
 	flags := flag.NewFlagSet(name, flag.ContinueOnError)
 	flags.SetOutput(c.errStream)
 	flags.Usage = func() {
 		fmt.Fprint(c.errStream, helpText)
 	}
+	flags.BoolVar(&numeric, "n", false, "")
+	flags.BoolVar(&numeric, "numeric", false, "")
 	flags.BoolVar(&ver, "version", false, "")
 	if err := flags.Parse(args[1:]); err != nil {
 		return exitCodeErr
@@ -51,17 +54,20 @@ func (c *CLI) Run(args []string) int {
 		return exitCodeErr
 	}
 
-	c.PrintHostFlows(flows)
+	c.PrintHostFlows(flows, numeric)
 
 	return exitCodeOK
 }
 
 // PrintHostFlows prints the host flows.
-func (c *CLI) PrintHostFlows(flows tcpflow.HostFlows) {
+func (c *CLI) PrintHostFlows(flows tcpflow.HostFlows, numeric bool) {
 	// Format in tab-separated columns with a tab stop of 8.
 	tw := tabwriter.NewWriter(c.outStream, 0, 8, 0, '\t', 0)
 	fmt.Fprintln(tw, "Local Address:Port\t <--> \tPeer Address:Port")
 	for _, flow := range flows {
+		if !numeric {
+			flow.ReplaceLookupedName()
+		}
 		fmt.Fprintf(tw, "%s\n", flow)
 	}
 	tw.Flush()
@@ -72,6 +78,7 @@ var helpText = `Usage: lstf [options]
   Print host flows between localhost and other hosts
 
 Options:
+  --numeric, -n             show numerical addresses instead of trying to determine symbolic host names.
   --version, -v	            print version
   --help, -h                print help
 `
