@@ -1,5 +1,7 @@
 # lstf
 
+[license]: https://github.com/yuuki/lstf/blob/master/LICENSE
+
 lstf prints `host flows` (aggregated network connection flows to the same source or destination ports) by Linux `/proc/net/tcp` (`netstat -tan`) and enables you to simply grasp the network relationship between localhost and other hosts.
 
 friend: [yuuki/lsconntrack](https://github.com/yuuki/lsconntrack)
@@ -15,3 +17,11 @@ localhost:many       -->    10.0.1.20:8080        99
 localhost:80         <--    10.0.2.10:80          120
 localhost:80         <--    10.0.2.11:80          202
 ```
+
+## License
+
+[MIT][license]
+
+## Author
+
+[yuuki](https://github.com/yuuki)
