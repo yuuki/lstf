@@ -2,14 +2,41 @@
 
 
 [[projects]]
-  name = "github.com/shirou/gopsutil"
+  name = "github.com/StackExchange/wmi"
   packages = ["."]
+  revision = "5d049714c4a64225c3c79a7cf7d02f7fb5b96338"
+  version = "1.0.0"
+
+[[projects]]
+  name = "github.com/go-ole/go-ole"
+  packages = [
+    ".",
+    "oleutil"
+  ]
+  revision = "a41e3c4b706f6ae8dfbff342b06e40fa4d2d0506"
+  version = "v1.2.1"
+
+[[projects]]
+  name = "github.com/shirou/gopsutil"
+  packages = [
+    "internal/common",
+    "net"
+  ]
   revision = "c432be29ccce470088d07eea25b3ea7e68a8afbb"
   version = "v2.18.01"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = [
+    "unix",
+    "windows"
+  ]
+  revision = "dd2ff4accc098aceecb86b36eaa7829b2a17b1c9"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "68be8ce24ac3fe18787cbe6155bac53fb7c045fd8210af86f5b371c70f511175"
+  inputs-digest = "04e3ccd90a756e253399071b2e7fa507468d533a01f99428213387ea5b729bf9"
   solver-name = "gps-cdcl"
   solver-version = 1
