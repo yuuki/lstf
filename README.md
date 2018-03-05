@@ -6,6 +6,14 @@ lstf prints `host flows` (aggregated network connection flows to the same source
 
 friend: [yuuki/lsconntrack](https://github.com/yuuki/lsconntrack)
 
+## Features
+
+- Distinction of `active open` and `passive open`
+- Print also the number of connections of each flows (the absolute values are meaningless)
+- Go portability
+- JSON support
+- TCP support only
+
 ## How to use
 
 ```shell
@@ -17,6 +25,9 @@ localhost:many       -->    10.0.1.20:8080        99
 localhost:80         <--    10.0.2.10:80          120
 localhost:80         <--    10.0.2.11:80          202
 ```
+
+- `-->` indicates `active open`
+- `<--` indicates `passive open`
 
 ### JSON format
 
