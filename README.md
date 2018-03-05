@@ -16,6 +16,8 @@ friend: [yuuki/lsconntrack](https://github.com/yuuki/lsconntrack)
 
 ## How to use
 
+HTTP requests --> Web:80 --> MySQL:3306
+
 ```shell
 $ lstf -n
 Local Address:Port   <-->   Peer Address:Port     Connections
