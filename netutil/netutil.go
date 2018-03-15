@@ -3,7 +3,6 @@ package netutil
 import (
 	"fmt"
 	"net"
-	"os"
 	"strings"
 
 	gnet "github.com/shirou/gopsutil/net"
@@ -66,21 +65,4 @@ func LocalIPAddrs() ([]string, error) {
 		}
 	}
 	return addrStrings, nil
-}
-
-var (
-	// IPConntrackPath are ip_conntrack path.
-	IPConntrackPath = "/proc/net/ip_conntrack" // old kernel
-	// NFConntrackPath are nf_conntrack path.
-	NFConntrackPath = "/proc/net/nf_conntrack" // new kernel
-)
-
-// FindConntrackPath returns the conntrack proc path if exists.
-func FindConntrackPath() string {
-	for _, path := range []string{IPConntrackPath, NFConntrackPath} {
-		if _, err := os.Stat(path); err == nil {
-			return path
-		}
-	}
-	return ""
 }
