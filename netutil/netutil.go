@@ -32,6 +32,9 @@ func LocalListeningPorts() ([]string, error) {
 	}
 	ports := []string{}
 	for _, conn := range conns {
+		if conn.Status != "LISTEN" {
+			continue
+		}
 		if conn.Laddr.IP == "0.0.0.0" || conn.Laddr.IP == "127.0.0.1" || conn.Laddr.IP == "::" {
 			ports = append(ports, fmt.Sprintf("%d", conn.Laddr.Port))
 		}
