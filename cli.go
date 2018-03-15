@@ -73,7 +73,7 @@ func (c *CLI) Run(args []string) int {
 func (c *CLI) PrintHostFlows(flows tcpflow.HostFlows, numeric bool) {
 	// Format in tab-separated columns with a tab stop of 8.
 	tw := tabwriter.NewWriter(c.outStream, 0, 8, 0, '\t', 0)
-	fmt.Fprintln(tw, "Local Address:Port\t <--> \tPeer Address:Port")
+	fmt.Fprintln(tw, "Local Address:Port\t <--> \tPeer Address:Port \tConnections")
 	for _, flow := range flows {
 		if !numeric {
 			flow.ReplaceLookupedName()
