@@ -2,7 +2,6 @@ package tcpflow
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net"
 
@@ -22,17 +21,22 @@ const (
 	FlowPassive
 )
 
-// MarshalJSON returns human readable `mode` format.
-func (c FlowDirection) MarshalJSON() ([]byte, error) {
+// String returns string representation.
+func (c FlowDirection) String() string {
 	switch c {
 	case FlowActive:
-		return json.Marshal("active")
+		return "active"
 	case FlowPassive:
-		return json.Marshal("passive")
+		return "passive"
 	case FlowUnknown:
-		return json.Marshal("unknown")
+		return "unknown"
 	}
-	return nil, errors.New("unreachable code")
+	return ""
+}
+
+// MarshalJSON returns human readable `mode` format.
+func (c FlowDirection) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.String())
 }
 
 // AddrPort are <addr>:<port>
