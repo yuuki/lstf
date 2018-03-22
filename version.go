@@ -4,7 +4,7 @@ package main
 const name = "lstf"
 
 // version is application version.
-const version = "0.2.1"
+const version = "0.3.0"
 
 // commit describes latest git commit hash.
 // This is automatically extracted by git describe --always.
