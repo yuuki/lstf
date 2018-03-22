@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net"
+	"strconv"
 
 	gnet "github.com/shirou/gopsutil/net"
 	"github.com/yuuki/lstf/netutil"
@@ -48,6 +49,15 @@ type AddrPort struct {
 // String returns the string representation of the AddrPort.
 func (a *AddrPort) String() string {
 	return net.JoinHostPort(a.Addr, a.Port)
+}
+
+// PortInt returnts integer representation.
+func (a *AddrPort) PortInt() int {
+	if a.Port == "many" {
+		return 0
+	}
+	i, _ := strconv.Atoi(a.Port)
+	return i
 }
 
 // HostFlow represents a `host flow`.
