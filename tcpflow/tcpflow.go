@@ -120,13 +120,13 @@ func GetHostFlows() (HostFlows, error) {
 		if contains(ports, lport) {
 			flows.insert(&HostFlow{
 				Direction: FlowPassive,
-				Local:     &AddrPort{Addr: "localhost", Port: lport},
+				Local:     &AddrPort{Addr: conn.Laddr.IP, Port: lport},
 				Peer:      &AddrPort{Addr: conn.Raddr.IP, Port: "many"},
 			})
 		} else {
 			flows.insert(&HostFlow{
 				Direction: FlowActive,
-				Local:     &AddrPort{Addr: "localhost", Port: "many"},
+				Local:     &AddrPort{Addr: conn.Laddr.IP, Port: "many"},
 				Peer:      &AddrPort{Addr: conn.Raddr.IP, Port: rport},
 			})
 		}
