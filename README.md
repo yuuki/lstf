@@ -23,9 +23,9 @@ $ lstf -n
 Local Address:Port   <-->   Peer Address:Port     Connections
 10.0.1.9:many        -->    10.0.1.10:3306        22
 10.0.1.9:many        -->    10.0.1.11:3306        14
-127.0.0.1:many       -->    10.0.1.20:8080        99
-10.0.1.9:80          <--    10.0.2.10:80          120
-10.0.1.9:80          <--    10.0.2.11:80          202
+10.0.2.10:22         <--    192.168.10.10:many    1
+10.0.1.9:80          <--    10.0.2.13:many        120
+10.0.1.9:80          <--    10.0.2.14:many        202
 ```
 
 - `-->` indicates `active open`
@@ -39,7 +39,7 @@ $ lstf -n --json | jq -r -M '.'
   {
     "direction": "active",
     "local": {
-      "Addr": "localhost",
+      "Addr": "10.0.1.9",
       "Port": "many"
     },
     "peer": {
@@ -51,7 +51,7 @@ $ lstf -n --json | jq -r -M '.'
   {
     "direction": "passive",
     "local": {
-      "addr": "localhost",
+      "addr": "10.0.1.9",
       "port": "80"
     },
     "peer": {
