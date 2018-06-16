@@ -8,6 +8,15 @@
   version = "1.0.0"
 
 [[projects]]
+  name = "github.com/elastic/gosigar"
+  packages = [
+    "sys",
+    "sys/linux"
+  ]
+  revision = "237dff72b4ba95da2cd985f96a9c0ede4aefc760"
+  version = "v0.9.0"
+
+[[projects]]
   name = "github.com/go-ole/go-ole"
   packages = [
     ".",
@@ -17,13 +26,19 @@
   version = "v1.2.1"
 
 [[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
   name = "github.com/shirou/gopsutil"
   packages = [
     "internal/common",
     "net"
   ]
-  revision = "c432be29ccce470088d07eea25b3ea7e68a8afbb"
-  version = "v2.18.01"
+  revision = "eeb1d38d69593f121e060d24d17f7b1f0936b203"
+  version = "v2.18.05"
 
 [[projects]]
   branch = "master"
@@ -32,11 +47,11 @@
     "unix",
     "windows"
   ]
-  revision = "dd2ff4accc098aceecb86b36eaa7829b2a17b1c9"
+  revision = "6c888cc515d3ed83fc103cf1d84468aad274b0a7"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "04e3ccd90a756e253399071b2e7fa507468d533a01f99428213387ea5b729bf9"
+  inputs-digest = "b976cb07514c77cde7a8afa11cfe888610e858846a1bbb9326fa32ddfae12e6d"
   solver-name = "gps-cdcl"
   solver-version = 1
