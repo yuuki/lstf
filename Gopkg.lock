@@ -26,6 +26,21 @@
   version = "v2.18.01"
 
 [[projects]]
+  name = "github.com/vishvananda/netlink"
+  packages = [
+    ".",
+    "nl"
+  ]
+  revision = "a2ad57a690f3caf3015351d2d6e1c0b95c349752"
+  version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/vishvananda/netns"
+  packages = ["."]
+  revision = "be1fbeda19366dea804f00efff2dd73a1642fdcc"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = [
@@ -37,6 +52,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "04e3ccd90a756e253399071b2e7fa507468d533a01f99428213387ea5b729bf9"
+  inputs-digest = "59225b09aa0ae3e8b159f87c4752bb60de820bc68db727498f2be3ec478d3caf"
   solver-name = "gps-cdcl"
   solver-version = 1

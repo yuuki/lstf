@@ -32,3 +32,7 @@
 [[constraint]]
   name = "github.com/shirou/gopsutil"
   version = "2.18.1"
+
+[[constraint]]
+  name = "github.com/vishvananda/netlink"
+  version = "1.0.0"
