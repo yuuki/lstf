@@ -3,6 +3,7 @@ package tcpflow
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net"
 	"strconv"
 
@@ -112,11 +113,12 @@ func (hf HostFlows) insert(flow *HostFlow) {
 
 // GetHostFlows reads /proc/net/tcp and wraps it as HostFlows.
 func GetHostFlows() (HostFlows, error) {
-	conns, err := gnet.Connections("tcp")
+	ports, err := netutil.LocalListeningPorts()
 	if err != nil {
 		return nil, err
 	}
-	ports, err := netutil.FilterByLocalListeningPorts(conns)
+	log.Println(ports)
+	conns, err := gnet.Connections("tcp")
 	if err != nil {
 		return nil, err
 	}
