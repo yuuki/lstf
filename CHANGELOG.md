@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.4.0](https://github.com/yuuki/lstf/compare/v0.3.0...v0.4.0) (2018-06-17)
+
+* Improve performance for getting connection stats in linux by netlink [#6](https://github.com/yuuki/lstf/pull/6) ([yuuki](https://github.com/yuuki))
+* Reduce the number of code to read /proc/net/tcp [#5](https://github.com/yuuki/lstf/pull/5) ([yuuki](https://github.com/yuuki))
+
 ## [v0.3.0](https://github.com/yuuki/lstf/compare/v0.2.1...v0.3.0) (2018-03-23)
 
 * Use local ip addr instead of localhost [#4](https://github.com/yuuki/lstf/pull/4) ([yuuki](https://github.com/yuuki))
