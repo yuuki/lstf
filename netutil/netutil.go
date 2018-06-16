@@ -8,7 +8,7 @@ import (
 	gnet "github.com/shirou/gopsutil/net"
 )
 
-// LocalListeningPorts returns the local listening ports.
+// FilterByLocalListeningPorts filters ConnectionStat slice by the local listening ports.
 // eg. [199, 111, 46131, 53, 8953, 25, 2812, 80, 8081, 22]
 // -----------------------------------------------------------------------------------
 // [y_uuki@host ~]$ netstat -tln
@@ -24,11 +24,7 @@ import (
 // tcp        0      0 :::80                       :::*                        LISTEN
 // tcp        0      0 :::8081                     :::*                        LISTEN
 // tcp        0      0 :::22                       :::*                        LISTEN
-func LocalListeningPorts() ([]string, error) {
-	conns, err := gnet.Connections("tcp")
-	if err != nil {
-		return nil, err
-	}
+func FilterByLocalListeningPorts(conns []gnet.ConnectionStat) ([]string, error) {
 	ports := []string{}
 	for _, conn := range conns {
 		if conn.Status != "LISTEN" {
@@ -39,6 +35,15 @@ func LocalListeningPorts() ([]string, error) {
 		}
 	}
 	return ports, nil
+}
+
+// LocalListeningPorts returns the local listening ports.
+func LocalListeningPorts() ([]string, error) {
+	conns, err := gnet.Connections("tcp")
+	if err != nil {
+		return nil, err
+	}
+	return FilterByLocalListeningPorts(conns)
 }
 
 // ResolveAddr lookup first hostname from IP Address.

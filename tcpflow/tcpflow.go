@@ -112,11 +112,11 @@ func (hf HostFlows) insert(flow *HostFlow) {
 
 // GetHostFlows reads /proc/net/tcp and wraps it as HostFlows.
 func GetHostFlows() (HostFlows, error) {
-	ports, err := netutil.LocalListeningPorts()
+	conns, err := gnet.Connections("tcp")
 	if err != nil {
 		return nil, err
 	}
-	conns, err := gnet.Connections("tcp")
+	ports, err := netutil.FilterByLocalListeningPorts(conns)
 	if err != nil {
 		return nil, err
 	}
