@@ -8,6 +8,15 @@
   version = "1.0.0"
 
 [[projects]]
+  name = "github.com/elastic/gosigar"
+  packages = [
+    "sys",
+    "sys/linux"
+  ]
+  revision = "237dff72b4ba95da2cd985f96a9c0ede4aefc760"
+  version = "v0.9.0"
+
+[[projects]]
   name = "github.com/go-ole/go-ole"
   packages = [
     ".",
@@ -17,28 +26,19 @@
   version = "v1.2.1"
 
 [[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
   name = "github.com/shirou/gopsutil"
   packages = [
     "internal/common",
     "net"
   ]
-  revision = "c432be29ccce470088d07eea25b3ea7e68a8afbb"
-  version = "v2.18.01"
-
-[[projects]]
-  name = "github.com/vishvananda/netlink"
-  packages = [
-    ".",
-    "nl"
-  ]
-  revision = "a2ad57a690f3caf3015351d2d6e1c0b95c349752"
-  version = "v1.0.0"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/vishvananda/netns"
-  packages = ["."]
-  revision = "be1fbeda19366dea804f00efff2dd73a1642fdcc"
+  revision = "eeb1d38d69593f121e060d24d17f7b1f0936b203"
+  version = "v2.18.05"
 
 [[projects]]
   branch = "master"
@@ -47,11 +47,11 @@
     "unix",
     "windows"
   ]
-  revision = "dd2ff4accc098aceecb86b36eaa7829b2a17b1c9"
+  revision = "6c888cc515d3ed83fc103cf1d84468aad274b0a7"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "59225b09aa0ae3e8b159f87c4752bb60de820bc68db727498f2be3ec478d3caf"
+  inputs-digest = "b976cb07514c77cde7a8afa11cfe888610e858846a1bbb9326fa32ddfae12e6d"
   solver-name = "gps-cdcl"
   solver-version = 1
