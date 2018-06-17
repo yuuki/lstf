@@ -2,7 +2,7 @@
 
 [license]: https://github.com/yuuki/lstf/blob/master/LICENSE
 
-lstf prints `host flows` (aggregated network connection flows to the same source or destination ports) by Linux `/proc/net/tcp` (`netstat -tan`) and enables you to simply grasp the network relationship between localhost and other hosts.
+lstf prints `host flows` (aggregated network connection flows to the same source or destination ports) by Linux netlink and enables you to simply grasp the network relationship between localhost and other hosts.
 
 friend: [yuuki/lsconntrack](https://github.com/yuuki/lsconntrack)
 
