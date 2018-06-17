@@ -1,3 +1,4 @@
+//go:generate go-bindata -pkg main -o credits.go CREDITS
 package main
 
 import (
@@ -16,6 +17,10 @@ const (
 	exitCodeErr = 10 + iota
 )
 
+var (
+	creditsText = string(MustAsset("CREDITS"))
+)
+
 // CLI is the command line object.
 type CLI struct {
 	// outStream and errStream are the stdout and stderr
@@ -32,6 +37,7 @@ func (c *CLI) Run(args []string) int {
 		numeric bool
 		json    bool
 		ver     bool
+		credits bool
 	)
 	flags := flag.NewFlagSet(name, flag.ContinueOnError)
 	flags.SetOutput(c.errStream)
@@ -42,12 +48,18 @@ func (c *CLI) Run(args []string) int {
 	flags.BoolVar(&numeric, "numeric", false, "")
 	flags.BoolVar(&json, "json", false, "")
 	flags.BoolVar(&ver, "version", false, "")
+	flags.BoolVar(&credits, "credits", false, "")
 	if err := flags.Parse(args[1:]); err != nil {
 		return exitCodeErr
 	}
 
 	if ver {
 		fmt.Fprintf(c.errStream, "%s version %s, build %s, date %s \n", name, version, commit, date)
+		return exitCodeOK
+	}
+
+	if credits {
+		fmt.Fprintln(c.outStream, creditsText)
 		return exitCodeOK
 	}
 
@@ -107,4 +119,5 @@ Options:
   --json                    print results as json format
   --version, -v	            print version
   --help, -h                print help
+  --credits                 print CREDITS
 `

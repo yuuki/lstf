@@ -33,6 +33,12 @@ func TestRun_global(t *testing.T) {
 			expectedSubErr: "lstf version",
 		},
 		{
+			desc:           "credits",
+			arg:            "lstf --credits",
+			expectedStatus: exitCodeOK,
+			expectedSubOut: "= lstf licensed under: =",
+		},
+		{
 			desc:           "normal",
 			arg:            "lstf",
 			expectedStatus: exitCodeOK,
