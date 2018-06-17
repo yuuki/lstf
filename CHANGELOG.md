@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.1](https://github.com/yuuki/lstf/compare/v0.4.0...v0.4.1) (2018-06-17)
+
+* Embed oss credits to go binary [#7](https://github.com/yuuki/lstf/pull/7) ([yuuki](https://github.com/yuuki))
+
 ## [v0.4.0](https://github.com/yuuki/lstf/compare/v0.3.0...v0.4.0) (2018-06-17)
 
 * Improve performance for getting connection stats in linux by netlink [#6](https://github.com/yuuki/lstf/pull/6) ([yuuki](https://github.com/yuuki))
