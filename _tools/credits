@@ -1,0 +1,39 @@
+#!/bin/bash
+set -e -o pipefail
+
+ROOT=$(dirname "${BASH_SOURCE}")/..
+cd "${ROOT}"
+
+echo '=========================================================================================='
+echo "= lstf licensed under: ="
+echo "https://github.com/yuuki/lstf/"
+echo
+cat "${ROOT}"/LICENSE
+echo
+echo "= LICENSE $(cat ${ROOT}/LICENSE | md5sum | awk '{print $1}')"
+echo '=========================================================================================='
+echo
+
+echo "= Go (the standard library) licensed under: ="
+echo "https://golang.org/"
+echo
+curl -sS https://raw.githubusercontent.com/golang/go/release-branch.go1.9/LICENSE 2>/dev/null
+echo
+echo '=========================================================================================='
+echo
+
+find_names=(-iname 'licen[sc]e*')
+for repo in $(dep status -json | jq -rM '.[].ProjectRoot'); do
+    echo
+    echo '=========================================================================================='
+    echo "= vendor/${repo} licensed under: ="
+    echo "https://${repo}/"
+    for lic in $(find vendor/${repo} -xdev -follow -maxdepth 1 -type f "${find_names[@]}"); do
+        echo
+        cat "${lic}"
+        echo
+        echo "= ${lic} $(cat ${lic} | md5sum | awk '{print $1}')"
+    done
+    echo '=========================================================================================='
+    echo
+done
