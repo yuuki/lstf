@@ -156,3 +156,12 @@ func FilterByLocalListeningPorts(conns []*ConnectionStat) ([]string, error) {
 	}
 	return ports, nil
 }
+
+// LocalListeningPorts returns the local listening ports.
+func LocalListeningPorts() ([]string, error) {
+	conns, err := ProcfsConnections()
+	if err != nil {
+		return nil, err
+	}
+	return FilterByLocalListeningPorts(conns)
+}
