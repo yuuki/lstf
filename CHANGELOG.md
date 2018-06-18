@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.3](https://github.com/yuuki/lstf/compare/v0.4.2...v0.4.3) (2018-06-19)
+
+* Improve performance by removing the inode and pid process [#9](https://github.com/yuuki/lstf/pull/9) ([yuuki](https://github.com/yuuki))
+
 ## [v0.4.2](https://github.com/yuuki/lstf/compare/v0.4.1...v0.4.2) (2018-06-19)
 
 * Add fallback to procfs after try netlink [#8](https://github.com/yuuki/lstf/pull/8) ([yuuki](https://github.com/yuuki))
