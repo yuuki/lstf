@@ -10,13 +10,23 @@ import (
 	"github.com/yuuki/lstf/netutil"
 )
 
-// GetHostFlows gets host flows by Linux netlink API.
+// GetHostFlows gets host flows by netlink, and try to get by procfs if it fails.
 func GetHostFlows() (HostFlows, error) {
+	flows, err := GetHostFlowsByNetlink()
+	if err != nil {
+		// fallback to procfs
+		return GetHostFlowsByProcfs()
+	}
+	return flows, err
+}
+
+// GetHostFlowsByNetlink gets host flows by Linux netlink API.
+func GetHostFlowsByNetlink() (HostFlows, error) {
 	conns, err := netutil.NetlinkConnections()
 	if err != nil {
 		return nil, err
 	}
-	ports, err := netutil.FilterByLocalListeningPorts(conns)
+	ports, err := netutil.NetlinkFilterByLocalListeningPorts(conns)
 	if err != nil {
 		return nil, err
 	}

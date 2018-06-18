@@ -18,8 +18,8 @@ func NetlinkConnections() ([]*linux.InetDiagMsg, error) {
 	return msgs, nil
 }
 
-// FilterByLocalListeningPorts filters ConnectionStat slice by the local listening ports.
-func FilterByLocalListeningPorts(conns []*linux.InetDiagMsg) ([]string, error) {
+// NetlinkFilterByLocalListeningPorts filters ConnectionStat slice by the local listening ports.
+func NetlinkFilterByLocalListeningPorts(conns []*linux.InetDiagMsg) ([]string, error) {
 	ports := []string{}
 	for _, conn := range conns {
 		if linux.TCPState(conn.State) != linux.TCP_LISTEN {
@@ -33,8 +33,8 @@ func FilterByLocalListeningPorts(conns []*linux.InetDiagMsg) ([]string, error) {
 	return ports, nil
 }
 
-// LodalListeningPorts returns the local listening ports.
-func LocalListeningPorts() ([]string, error) {
+// NetlinkLodalListeningPorts returns the local listening ports.
+func NetlinkLocalListeningPorts() ([]string, error) {
 	msgs, err := NetlinkConnections()
 	if err != nil {
 		return nil, err
