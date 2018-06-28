@@ -31,6 +31,12 @@ Local Address:Port   <-->   Peer Address:Port     Connections
 - `-->` indicates `active open`
 - `<--` indicates `passive open`
 
+Sort flows by the number of connection.
+
+```shell
+$ lstf -n | sort -nrk4
+```
+
 ### JSON format
 
 ```shell
