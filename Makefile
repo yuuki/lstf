@@ -6,7 +6,7 @@ RELEASE_BUILD_LDFLAGS = -s -w $(BUILD_LDFLAGS)
 CREDITS = ./CREDITS
 
 .PHONY: build
-build:
+build: credits
 	go build -ldflags="$(BUILD_LDFLAGS)"
 
 .PHONY: test
@@ -26,8 +26,6 @@ devel-deps:
 	go get github.com/Songmu/goxz
 	go get github.com/tcnksm/ghr
 
-credits-deps:
-
 .PHONY: credits
 credits:
 	go get github.com/go-bindata/go-bindata/...
@@ -37,7 +35,7 @@ ifneq (,$(git status -s $(CREDITS)))
 endif
 
 .PHONY: crossbuild
-crossbuild: devel-deps
+crossbuild: devel-deps credits
 	$(eval ver = $(shell gobump show -r))
 	goxz -pv=v$(ver) -os=linux -arch=386,amd64 -build-ldflags="$(RELEASE_BUILD_LDFLAGS)" \
 	  -d=./dist/v$(ver)
