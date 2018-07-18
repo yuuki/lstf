@@ -1,4 +1,4 @@
-//go:generate go-bindata -pkg main -o credits.go CREDITS
+//go:generate go-bindata -nometadata -pkg main -o credits.go CREDITS
 package main
 
 import (
