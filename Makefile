@@ -1,3 +1,5 @@
+export GO111MODULE=on
+
 PKG = github.com/yuuki/lstf
 COMMIT = $$(git describe --tags --always)
 DATE = $$(date --utc '+%Y-%m-%d_%H:%M:%S')
