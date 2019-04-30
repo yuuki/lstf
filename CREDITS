@@ -1,36 +1,6 @@
-==========================================================================================
-= lstf licensed under: =
-https://github.com/yuuki/lstf/
-
-Copyright (c) 2018 y_uuki
-
-MIT License
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-= LICENSE 5ccf586754a77b2b59bf717d7b8785c8
-==========================================================================================
-
-= Go (the standard library) licensed under: =
+Go (the standard library)
 https://golang.org/
-
+----------------------------------------------------------------
 Copyright (c) 2009 The Go Authors. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -59,13 +29,11 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-==========================================================================================
+================================================================
 
-
-==========================================================================================
-= vendor/github.com/StackExchange/wmi licensed under: =
-https://github.com/StackExchange/wmi/
-
+github.com/StackExchange/wmi
+https://github.com/StackExchange/wmi
+----------------------------------------------------------------
 The MIT License (MIT)
 
 Copyright (c) 2013 Stack Exchange
@@ -87,14 +55,32 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-= vendor/github.com/StackExchange/wmi/LICENSE 7e64b32a93ebf1d28071bfd302098152
-==========================================================================================
+================================================================
 
+github.com/davecgh/go-spew
+https://github.com/davecgh/go-spew
+----------------------------------------------------------------
+ISC License
 
-==========================================================================================
-= vendor/github.com/elastic/gosigar licensed under: =
-https://github.com/elastic/gosigar/
+Copyright (c) 2012-2016 Dave Collins <dave@davec.name>
 
+Permission to use, copy, modify, and distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+================================================================
+
+github.com/elastic/gosigar
+https://github.com/elastic/gosigar
+----------------------------------------------------------------
                               Apache License
                         Version 2.0, January 2004
                      http://www.apache.org/licenses/
@@ -297,14 +283,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-= vendor/github.com/elastic/gosigar/LICENSE 8f7bb094c7232b058c7e9f2e431f389c
-==========================================================================================
+================================================================
 
-
-==========================================================================================
-= vendor/github.com/go-ole/go-ole licensed under: =
-https://github.com/go-ole/go-ole/
-
+github.com/go-ole/go-ole
+https://github.com/go-ole/go-ole
+----------------------------------------------------------------
 The MIT License (MIT)
 
 Copyright © 2013-2017 Yasuhiro Matsumoto, <mattn.jp@gmail.com>
@@ -327,14 +310,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-= vendor/github.com/go-ole/go-ole/LICENSE 7326db50c2d71ed0b0ca841d49b9e63e
-==========================================================================================
+================================================================
 
-
-==========================================================================================
-= vendor/github.com/pkg/errors licensed under: =
-https://github.com/pkg/errors/
-
+github.com/pkg/errors
+https://github.com/pkg/errors
+----------------------------------------------------------------
 Copyright (c) 2015, Dave Cheney <dave@cheney.net>
 All rights reserved.
 
@@ -359,14 +339,44 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-= vendor/github.com/pkg/errors/LICENSE 6fe682a02df52c6653f33bd0f7126b5a
-==========================================================================================
+================================================================
 
+github.com/pmezard/go-difflib
+https://github.com/pmezard/go-difflib
+----------------------------------------------------------------
+Copyright (c) 2013, Patrick Mezard
+All rights reserved.
 
-==========================================================================================
-= vendor/github.com/shirou/gopsutil licensed under: =
-https://github.com/shirou/gopsutil/
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
 
+    Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+    Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+    The names of its contributors may not be used to endorse or promote
+products derived from this software without specific prior written
+permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+================================================================
+
+github.com/shirou/gopsutil
+https://github.com/shirou/gopsutil
+----------------------------------------------------------------
 gopsutil is distributed under BSD license reproduced below.
 
 Copyright (c) 2014, WAKAYAMA Shirou
@@ -428,14 +438,38 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-= vendor/github.com/shirou/gopsutil/LICENSE ed7522382cec5b7a6d6ebb8e30eed40e
-==========================================================================================
+================================================================
 
+github.com/stretchr/testify
+https://github.com/stretchr/testify
+----------------------------------------------------------------
+MIT License
 
-==========================================================================================
-= vendor/golang.org/x/sys licensed under: =
-https://golang.org/x/sys/
+Copyright (c) 2012-2018 Mat Ryer and Tyler Bunnell
 
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================
+
+golang.org/x/sys
+https://golang.org/x/sys
+----------------------------------------------------------------
 Copyright (c) 2009 The Go Authors. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -464,6 +498,5 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-= vendor/golang.org/x/sys/LICENSE 5d4950ecb7b26d2c5e4e7b4e0dd74707
-==========================================================================================
+================================================================
 
