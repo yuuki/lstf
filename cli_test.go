@@ -36,7 +36,7 @@ func TestRun_global(t *testing.T) {
 			desc:           "credits",
 			arg:            "lstf --credits",
 			expectedStatus: exitCodeOK,
-			expectedSubOut: "= lstf licensed under: =",
+			expectedSubOut: "Go (the standard library)",
 		},
 		{
 			desc:           "normal",
