@@ -168,11 +168,14 @@ func LocalListeningPorts() ([]string, error) {
 	return FilterByLocalListeningPorts(conns)
 }
 
-const ProcDir = "/proc"
-
 // FindProcessByListeningPorts returns processes filterd by listening ports.
 func FindProcessByListeningPort(ports []string) error {
-	dir, err := ioutil.ReadDir(ProcDir)
+	root := os.Getenv("PROC_ROOT")
+	if root == "" {
+		root = "/proc"
+	}
+
+	dir, err := ioutil.ReadDir(root)
 	if err != nil {
 		return err
 	}
@@ -185,7 +188,7 @@ func FindProcessByListeningPort(ports []string) error {
 		if err != nil {
 			continue
 		}
-		pidDir := filepath.Join(ProcDir, d.Name())
+		pidDir := filepath.Join(root, d.Name())
 		fdDir := filepath.Join(pidDir, "fd")
 
 		// exists fd?
