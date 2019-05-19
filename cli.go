@@ -34,10 +34,11 @@ func (c *CLI) Run(args []string) int {
 	log.SetOutput(c.errStream)
 
 	var (
-		numeric bool
-		json    bool
-		ver     bool
-		credits bool
+		numeric   bool
+		processes bool
+		json      bool
+		ver       bool
+		credits   bool
 	)
 	flags := flag.NewFlagSet(name, flag.ContinueOnError)
 	flags.SetOutput(c.errStream)
@@ -46,6 +47,9 @@ func (c *CLI) Run(args []string) int {
 	}
 	flags.BoolVar(&numeric, "n", false, "")
 	flags.BoolVar(&numeric, "numeric", false, "")
+	flags.BoolVar(&processes, "p", false, "")
+	flags.BoolVar(&processes, "processes", false, "")
+	flags.BoolVar(&numeric, "", false, "")
 	flags.BoolVar(&json, "json", false, "")
 	flags.BoolVar(&ver, "version", false, "")
 	flags.BoolVar(&credits, "credits", false, "")
@@ -63,7 +67,7 @@ func (c *CLI) Run(args []string) int {
 		return exitCodeOK
 	}
 
-	flows, err := tcpflow.GetHostFlows()
+	flows, err := tcpflow.GetHostFlows(processes)
 	if err != nil {
 		log.Printf("failed to get host flows: %v", err)
 		return exitCodeErr
@@ -116,6 +120,7 @@ var helpText = `Usage: lstf [options]
 
 Options:
   --numeric, -n             show numerical addresses instead of trying to determine symbolic host names.
+  --processes, -p           show process using socket
   --json                    print results as json format
   --version, -v	            print version
   --help, -h                print help

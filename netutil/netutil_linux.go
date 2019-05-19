@@ -165,3 +165,25 @@ func LocalListeningPorts() ([]string, error) {
 	}
 	return FilterByLocalListeningPorts(conns)
 }
+
+const ProcDir = "/proc"
+
+// FindProcessByListeningPorts returns processes filterd by listening ports.
+func FindProcessByListeningPort(ports []string) error {
+	files, err := ioutil.ReadDir(ProcDir)
+	if err != nil {
+		return err
+	}
+	for _, file := range files {
+		// find only "<pid>"" directory
+		if !file.IsDir() {
+			continue
+		}
+		if _, err := strconv.Atoi(file.Name()); err != nil {
+			continue
+		}
+		log.Println(file.Name())
+		// get socket id
+	}
+	return nil
+}

@@ -10,7 +10,8 @@ import (
 )
 
 // GetHostFlows gets host flows.
-func GetHostFlows() (HostFlows, error) {
+// TODO: implement processes option
+func GetHostFlows(processes bool) (HostFlows, error) {
 	conns, err := gnet.Connections("tcp")
 	if err != nil {
 		return nil, err

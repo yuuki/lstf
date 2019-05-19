@@ -11,7 +11,7 @@ import (
 )
 
 // GetHostFlows gets host flows by netlink, and try to get by procfs if it fails.
-func GetHostFlows() (HostFlows, error) {
+func GetHostFlows(processes bool) (HostFlows, error) {
 	flows, err := GetHostFlowsByNetlink()
 	if err != nil {
 		// fallback to procfs
@@ -28,6 +28,9 @@ func GetHostFlowsByNetlink() (HostFlows, error) {
 	}
 	ports, err := netutil.NetlinkFilterByLocalListeningPorts(conns)
 	if err != nil {
+		return nil, err
+	}
+	if err := netutil.FindProcessByListeningPort(ports); err != nil {
 		return nil, err
 	}
 	flows := HostFlows{}
