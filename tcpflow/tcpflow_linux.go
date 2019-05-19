@@ -14,6 +14,7 @@ import (
 func GetHostFlows(processes bool) (HostFlows, error) {
 	flows, err := GetHostFlowsByNetlink()
 	if err != nil {
+		// TODO: err handling
 		// fallback to procfs
 		return GetHostFlowsByProcfs()
 	}

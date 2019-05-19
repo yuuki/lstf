@@ -9,6 +9,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -170,20 +172,60 @@ const ProcDir = "/proc"
 
 // FindProcessByListeningPorts returns processes filterd by listening ports.
 func FindProcessByListeningPort(ports []string) error {
-	files, err := ioutil.ReadDir(ProcDir)
+	dir, err := ioutil.ReadDir(ProcDir)
 	if err != nil {
 		return err
 	}
-	for _, file := range files {
+	for _, d := range dir {
 		// find only "<pid>"" directory
-		if !file.IsDir() {
+		if !d.IsDir() {
 			continue
 		}
-		if _, err := strconv.Atoi(file.Name()); err != nil {
+		pid, err := strconv.Atoi(d.Name())
+		if err != nil {
 			continue
 		}
-		log.Println(file.Name())
-		// get socket id
+		pidDir := filepath.Join(ProcDir, d.Name())
+		fdDir := filepath.Join(pidDir, "fd")
+
+		// exists fd?
+		fdstat, err := os.Stat(fdDir)
+		if err != nil {
+			return err
+		}
+		if !fdstat.IsDir() {
+			continue
+		}
+
+		dir2, err := ioutil.ReadDir(fdDir)
+		if err != nil {
+			return err
+		}
+		for _, d2 := range dir2 {
+			if _, err := strconv.Atoi(d2.Name()); err != nil {
+				continue
+			}
+
+			lnk, err := os.Readlink(filepath.Join(fdDir, d2.Name()))
+			if err != nil {
+				return err
+			}
+			// get socket inode
+			const pattern = "socket:["
+			ind := strings.Index(lnk, pattern)
+			if ind == -1 {
+				continue
+			}
+			var ino uint32
+			n, err := fmt.Sscanf(lnk, "socket:[%d]", &ino)
+			if err != nil {
+				return err
+			}
+			if n != 1 {
+				return fmt.Errorf("pid:%d '%s' should be pattern '[socket:%d]'", pid, lnk)
+			}
+			fmt.Println(ino)
+		}
 	}
 	return nil
 }
