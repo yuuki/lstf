@@ -4,6 +4,7 @@ package tcpflow
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/elastic/gosigar/sys/linux"
 	"golang.org/x/xerrors"
@@ -13,7 +14,7 @@ import (
 
 // GetHostFlows gets host flows by netlink, and try to get by procfs if it fails.
 func GetHostFlows(processes bool) (HostFlows, error) {
-	flows, err := GetHostFlowsByNetlink()
+	flows, err := GetHostFlowsByNetlink(processes)
 	if err != nil {
 		var netlinkErr *netutil.NetlinkError
 		if xerrors.As(err, &netlinkErr) {
@@ -26,16 +27,21 @@ func GetHostFlows(processes bool) (HostFlows, error) {
 }
 
 // GetHostFlowsByNetlink gets host flows by Linux netlink API.
-func GetHostFlowsByNetlink() (HostFlows, error) {
+func GetHostFlowsByNetlink(processes bool) (HostFlows, error) {
+	var userEnts netutil.UserEnts
+	if processes {
+		var err error
+		userEnts, err = netutil.BuildUserEntries()
+		if err != nil {
+			return nil, err
+		}
+	}
 	conns, err := netutil.NetlinkConnections()
 	if err != nil {
 		return nil, err
 	}
 	ports, err := netutil.NetlinkFilterByLocalListeningPorts(conns)
 	if err != nil {
-		return nil, err
-	}
-	if err := netutil.FindProcessByListeningPort(ports); err != nil {
 		return nil, err
 	}
 	flows := HostFlows{}
@@ -57,6 +63,7 @@ func GetHostFlowsByNetlink() (HostFlows, error) {
 				Peer:      &AddrPort{Addr: conn.DstIP().String(), Port: rport},
 			})
 		}
+		log.Printf("%+v\n", userEnts[conn.Inode])
 	}
 	return flows, nil
 }

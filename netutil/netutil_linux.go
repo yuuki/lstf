@@ -178,8 +178,46 @@ func LocalListeningPorts() ([]string, error) {
 	return FilterByLocalListeningPorts(conns)
 }
 
-// FindProcessByListeningPorts returns processes filterd by listening ports.
-func FindProcessByListeningPort(ports []string) error {
+// UserEnt represents a detail of network socket.
+// see https://github.com/shemminger/iproute2/blob/afa588490b7e87c5adfb05d5163074e20b6ff14a/misc/ss.c#L509.
+type UserEnt struct {
+	inode   uint32 // inode number
+	fd      int    // file discryptor
+	pid     int    // process id
+	pname   string // process name
+	cmdline string // process cmdline
+}
+
+// Inode returns inode.
+func (u *UserEnt) Inode() uint32 {
+	return u.inode
+}
+
+// Fd returns file descriptor.
+func (u *UserEnt) Fd() int {
+	return u.fd
+}
+
+// Pid returns process id.
+func (u *UserEnt) Pid() int {
+	return u.pid
+}
+
+// Pname returns process name.
+func (u *UserEnt) Pname() string {
+	return u.pname
+}
+
+// Cmdline returns command line.
+func (u *UserEnt) Cmdline() string {
+	return u.cmdline
+}
+
+// UserEnts represents a hashmap of UserEnt as key is the inode.
+type UserEnts map[uint32]*UserEnt
+
+// BuildUserEntries scans under /proc/%pid/fd/.
+func BuildUserEntries() (UserEnts, error) {
 	root := os.Getenv("PROC_ROOT")
 	if root == "" {
 		root = "/proc"
@@ -187,8 +225,11 @@ func FindProcessByListeningPort(ports []string) error {
 
 	dir, err := ioutil.ReadDir(root)
 	if err != nil {
-		return err
+		return nil, err
 	}
+
+	userEnts := make(UserEnts, 0)
+
 	for _, d := range dir {
 		// find only "<pid>"" directory
 		if !d.IsDir() {
@@ -198,13 +239,19 @@ func FindProcessByListeningPort(ports []string) error {
 		if err != nil {
 			continue
 		}
+
+		// skip self process
+		if pid == os.Getpid() {
+			continue
+		}
+
 		pidDir := filepath.Join(root, d.Name())
 		fdDir := filepath.Join(pidDir, "fd")
 
 		// exists fd?
 		fdstat, err := os.Stat(fdDir)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		if !fdstat.IsDir() {
 			continue
@@ -212,7 +259,7 @@ func FindProcessByListeningPort(ports []string) error {
 
 		dir2, err := ioutil.ReadDir(fdDir)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		for _, d2 := range dir2 {
 			if _, err := strconv.Atoi(d2.Name()); err != nil {
@@ -221,7 +268,7 @@ func FindProcessByListeningPort(ports []string) error {
 
 			lnk, err := os.Readlink(filepath.Join(fdDir, d2.Name()))
 			if err != nil {
-				return err
+				return nil, err
 			}
 			// get socket inode
 			const pattern = "socket:["
@@ -232,13 +279,17 @@ func FindProcessByListeningPort(ports []string) error {
 			var ino uint32
 			n, err := fmt.Sscanf(lnk, "socket:[%d]", &ino)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			if n != 1 {
-				return fmt.Errorf("pid:%d '%s' should be pattern '[socket:%d]'", pid, lnk)
+				return nil, fmt.Errorf("pid:%d '%s' should be pattern '[socket:%d]'", pid, lnk)
 			}
-			fmt.Println(ino)
+
+			userEnts[ino] = &UserEnt{
+				inode: ino,
+				pid:   pid,
+			}
 		}
 	}
-	return nil
+	return userEnts, nil
 }

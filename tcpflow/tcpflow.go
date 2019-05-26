@@ -117,11 +117,3 @@ func contains(strs []string, s string) bool {
 	}
 	return false
 }
-
-// Process represents a OS process.
-type Process struct {
-	Pid     int32  `json:"pid"`
-	Gpid    int32  `json:"gpid"`
-	Name    string `json:"name"`
-	Cmdline string `json:"cmdline"`
-}
