@@ -282,7 +282,7 @@ func BuildUserEntries() (UserEnts, error) {
 				return nil, err
 			}
 			if n != 1 {
-				return nil, fmt.Errorf("pid:%d '%s' should be pattern '[socket:%d]'", pid, lnk)
+				return nil, xerrors.Errorf("pid:%d '%s' should be pattern '[socket:\\%d]'", pid, lnk)
 			}
 
 			userEnts[ino] = &UserEnt{
