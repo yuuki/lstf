@@ -10,4 +10,5 @@ require (
 	github.com/shirou/gopsutil v0.0.0-20180524063240-eeb1d38d6959
 	github.com/stretchr/testify v1.3.0 // indirect
 	golang.org/x/sys v0.0.0-20180616030259-6c888cc515d3 // indirect
+	golang.org/x/xerrors v0.0.0-20190513163551-3ee3066db522
 )

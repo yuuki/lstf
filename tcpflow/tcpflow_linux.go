@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/elastic/gosigar/sys/linux"
+	"golang.org/x/xerrors"
 
 	"github.com/yuuki/lstf/netutil"
 )
@@ -14,11 +15,14 @@ import (
 func GetHostFlows(processes bool) (HostFlows, error) {
 	flows, err := GetHostFlowsByNetlink()
 	if err != nil {
-		// TODO: err handling
-		// fallback to procfs
-		return GetHostFlowsByProcfs()
+		var netlinkErr *netutil.NetlinkError
+		if xerrors.As(err, &netlinkErr) {
+			// fallback to procfs
+			return GetHostFlowsByProcfs()
+		}
+		return nil, err
 	}
-	return flows, err
+	return flows, nil
 }
 
 // GetHostFlowsByNetlink gets host flows by Linux netlink API.
