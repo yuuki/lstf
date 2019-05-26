@@ -13,16 +13,26 @@ import (
 	"strings"
 
 	"github.com/elastic/gosigar/sys/linux"
+	"golang.org/x/xerrors"
 
 	gnet "github.com/shirou/gopsutil/net"
 )
+
+// NetlinkError represents netlink error.
+type NetlinkError struct {
+	msg string
+}
+
+func (e *NetlinkError) Error() string {
+	return fmt.Sprintf("Netlink error: %s", e.msg)
+}
 
 // NetlinkConnections returns connection stats.
 func NetlinkConnections() ([]*linux.InetDiagMsg, error) {
 	req := linux.NewInetDiagReq()
 	msgs, err := linux.NetlinkInetDiag(req)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("NetlinkInetDiag: %w", &NetlinkError{})
 	}
 	return msgs, nil
 }
