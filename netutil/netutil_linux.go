@@ -285,6 +285,9 @@ func BuildUserEntries() (UserEnts, error) {
 				return nil, xerrors.Errorf("pid:%d '%s' should be pattern '[socket:\\%d]'", pid, lnk)
 			}
 
+			if _, ok := userEnts[ino]; ok {
+				log.Printf("found duplicate socket inode '%d'\n", ino)
+			}
 			userEnts[ino] = &UserEnt{
 				inode: ino,
 				pid:   pid,
