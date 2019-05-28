@@ -262,7 +262,8 @@ func BuildUserEntries() (UserEnts, error) {
 			return nil, err
 		}
 		for _, d2 := range dir2 {
-			if _, err := strconv.Atoi(d2.Name()); err != nil {
+			fd, err := strconv.Atoi(d2.Name())
+			if err != nil {
 				continue
 			}
 
@@ -290,6 +291,7 @@ func BuildUserEntries() (UserEnts, error) {
 			}
 			userEnts[ino] = &UserEnt{
 				inode: ino,
+				fd:    fd,
 				pid:   pid,
 			}
 		}
