@@ -249,11 +249,11 @@ func BuildUserEntries() (UserEnts, error) {
 		fdDir := filepath.Join(pidDir, "fd")
 
 		// exists fd?
-		fdstat, err := os.Stat(fdDir)
-		if err != nil {
+		fi, err := os.Stat(fdDir)
+		switch {
+		case err != nil:
 			return nil, err
-		}
-		if !fdstat.IsDir() {
+		case !fi.IsDir():
 			continue
 		}
 
