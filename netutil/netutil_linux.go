@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net"
@@ -261,6 +262,9 @@ func BuildUserEntries() (UserEnts, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		var pname string
+
 		for _, d2 := range dir2 {
 			fd, err := strconv.Atoi(d2.Name())
 			if err != nil {
@@ -286,10 +290,29 @@ func BuildUserEntries() (UserEnts, error) {
 				return nil, xerrors.Errorf("pid:%d '%s' should be pattern '[socket:\\%d]'", pid, lnk)
 			}
 
+			if pname == "" {
+				stat := fmt.Sprintf("%s/%d/stat", root, pid)
+				f, err := os.Open(stat)
+				if err != nil {
+					return nil, xerrors.Errorf("could not open %s: %w", stat, err)
+				}
+				defer f.Close()
+
+				var n, m string
+				if _, err := fmt.Fscan(f, &n, &m); err != nil {
+					return nil, xerrors.Errorf("could not scan '%s': %w", stat, err)
+				}
+				// workaround: Sscanf return io.ErrUnexpectedEOF without knowing why.
+				if _, err := fmt.Sscanf(m, "(%s)", &pname); err != nil && err != io.ErrUnexpectedEOF {
+					return nil, xerrors.Errorf("could not scan '%s': %w", m, err)
+				}
+			}
+
 			userEnts[ino] = &UserEnt{
 				inode: ino,
 				fd:    fd,
 				pid:   pid,
+				pname: pname,
 			}
 		}
 	}
