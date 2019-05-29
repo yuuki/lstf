@@ -182,11 +182,10 @@ func LocalListeningPorts() ([]string, error) {
 // UserEnt represents a detail of network socket.
 // see https://github.com/shemminger/iproute2/blob/afa588490b7e87c5adfb05d5163074e20b6ff14a/misc/ss.c#L509.
 type UserEnt struct {
-	inode   uint32 // inode number
-	fd      int    // file discryptor
-	pid     int    // process id
-	pname   string // process name
-	cmdline string // process cmdline
+	inode uint32 // inode number
+	fd    int    // file discryptor
+	pid   int    // process id
+	pname string // process name
 }
 
 // Inode returns inode.
@@ -207,11 +206,6 @@ func (u *UserEnt) Pid() int {
 // Pname returns process name.
 func (u *UserEnt) Pname() string {
 	return u.pname
-}
-
-// Cmdline returns command line.
-func (u *UserEnt) Cmdline() string {
-	return u.cmdline
 }
 
 // UserEnts represents a hashmap of UserEnt as key is the inode.
