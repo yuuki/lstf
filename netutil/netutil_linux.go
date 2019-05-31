@@ -300,6 +300,7 @@ func BuildUserEntries() (UserEnts, error) {
 				if _, err := fmt.Sscanf(m, "(%s)", &pname); err != nil && err != io.ErrUnexpectedEOF {
 					return nil, xerrors.Errorf("could not scan '%s': %w", m, err)
 				}
+				pname = strings.TrimRight(pname, ")")
 			}
 
 			userEnts[ino] = &UserEnt{
