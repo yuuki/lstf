@@ -61,19 +61,24 @@ func (a *AddrPort) PortInt() int {
 
 // HostFlow represents a `host flow`.
 type HostFlow struct {
-	Direction   FlowDirection `json:"direction"`
-	Local       *AddrPort     `json:"local"`
-	Peer        *AddrPort     `json:"peer"`
-	Connections int64         `json:"connections"`
+	Direction   FlowDirection    `json:"direction"`
+	Local       *AddrPort        `json:"local"`
+	Peer        *AddrPort        `json:"peer"`
+	Connections int64            `json:"connections"`
+	UserEnt     *netutil.UserEnt `json:"user_entries"`
 }
 
 // String returns the string representation of HostFlow.
 func (f *HostFlow) String() string {
+	var entStr string
+	if f.UserEnt != nil {
+		entStr = fmt.Sprintf("\t(\"%s\")", f.UserEnt.Pname())
+	}
 	switch f.Direction {
 	case FlowActive:
-		return fmt.Sprintf("%s\t --> \t%s \t%d", f.Local, f.Peer, f.Connections)
+		return fmt.Sprintf("%s\t --> \t%s \t%d%s", f.Local, f.Peer, f.Connections, entStr)
 	case FlowPassive:
-		return fmt.Sprintf("%s\t <-- \t%s \t%d", f.Local, f.Peer, f.Connections)
+		return fmt.Sprintf("%s\t <-- \t%s \t%d%s", f.Local, f.Peer, f.Connections, entStr)
 	}
 	return ""
 }

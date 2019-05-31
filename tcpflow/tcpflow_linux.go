@@ -4,7 +4,6 @@ package tcpflow
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/elastic/gosigar/sys/linux"
 	"golang.org/x/xerrors"
@@ -49,21 +48,28 @@ func GetHostFlowsByNetlink(processes bool) (HostFlows, error) {
 		if linux.TCPState(conn.State) == linux.TCP_LISTEN {
 			continue
 		}
+
+		var ent *netutil.UserEnt
+		if userEnts != nil {
+			ent = userEnts[conn.Inode]
+		}
+
 		lport, rport := fmt.Sprintf("%d", conn.SrcPort()), fmt.Sprintf("%d", conn.DstPort())
 		if contains(ports, lport) {
 			flows.insert(&HostFlow{
 				Direction: FlowPassive,
 				Local:     &AddrPort{Addr: conn.SrcIP().String(), Port: lport},
 				Peer:      &AddrPort{Addr: conn.DstIP().String(), Port: "many"},
+				UserEnt:   ent,
 			})
 		} else {
 			flows.insert(&HostFlow{
 				Direction: FlowActive,
 				Local:     &AddrPort{Addr: conn.SrcIP().String(), Port: "many"},
 				Peer:      &AddrPort{Addr: conn.DstIP().String(), Port: rport},
+				UserEnt:   ent,
 			})
 		}
-		log.Printf("%+v\n", userEnts[conn.Inode])
 	}
 	return flows, nil
 }
