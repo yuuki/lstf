@@ -179,38 +179,6 @@ func LocalListeningPorts() ([]string, error) {
 	return FilterByLocalListeningPorts(conns)
 }
 
-// UserEnt represents a detail of network socket.
-// see https://github.com/shemminger/iproute2/blob/afa588490b7e87c5adfb05d5163074e20b6ff14a/misc/ss.c#L509.
-type UserEnt struct {
-	inode uint32 // inode number
-	fd    int    // file discryptor
-	pid   int    // process id
-	pname string // process name
-}
-
-// Inode returns inode.
-func (u *UserEnt) Inode() uint32 {
-	return u.inode
-}
-
-// Fd returns file descriptor.
-func (u *UserEnt) Fd() int {
-	return u.fd
-}
-
-// Pid returns process id.
-func (u *UserEnt) Pid() int {
-	return u.pid
-}
-
-// Pname returns process name.
-func (u *UserEnt) Pname() string {
-	return u.pname
-}
-
-// UserEnts represents a hashmap of UserEnt as key is the inode.
-type UserEnts map[uint32]*UserEnt
-
 // BuildUserEntries scans under /proc/%pid/fd/.
 func BuildUserEntries() (UserEnts, error) {
 	root := os.Getenv("PROC_ROOT")
