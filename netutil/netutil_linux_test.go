@@ -23,12 +23,12 @@ func TestParseProcStat(t *testing.T) {
 	root := filepath.Join(cur, "../testdata")
 	pid := 10000
 
-	pname, err := parseProcStat(root, pid)
+	stat, err := parseProcStat(root, pid)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if pname != "nginx" {
-		t.Errorf("process name '%s' should be 'nginx'", pname)
+	if stat.Pname != "nginx" {
+		t.Errorf("process name '%s' should be 'nginx'", stat.Pname)
 	}
 }
