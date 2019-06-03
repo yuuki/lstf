@@ -1,3 +1,9 @@
 FROM golang:1.12
-WORKDIR /go/src/github.com/yuuki/lstf
-ADD . /go/src/github.com/yuuki/lstf
+
+RUN mkdir -p /src
+WORKDIR /src
+COPY go.mod .
+COPY go.sum .
+
+RUN go mod download
+COPY . .
