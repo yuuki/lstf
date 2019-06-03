@@ -179,6 +179,28 @@ func LocalListeningPorts() ([]string, error) {
 	return FilterByLocalListeningPorts(conns)
 }
 
+func parseProcStat(root string, pid int) (string, error) {
+	stat := fmt.Sprintf("%s/%d/stat", root, pid)
+	f, err := os.Open(stat)
+	if err != nil {
+		return "", xerrors.Errorf("could not open %s: %w", stat, err)
+	}
+	defer f.Close()
+
+	var n, m string
+	if _, err := fmt.Fscan(f, &n, &m); err != nil {
+		return "", xerrors.Errorf("could not scan '%s': %w", stat, err)
+	}
+
+	var pname string
+	// workaround: Sscanf return io.ErrUnexpectedEOF without knowing why.
+	if _, err := fmt.Sscanf(m, "(%s)", &pname); err != nil && err != io.ErrUnexpectedEOF {
+		return "", xerrors.Errorf("could not scan '%s': %w", m, err)
+	}
+
+	return strings.TrimRight(pname, ")"), nil
+}
+
 // BuildUserEntries scans under /proc/%pid/fd/.
 func BuildUserEntries() (UserEnts, error) {
 	root := os.Getenv("PROC_ROOT")
@@ -253,22 +275,11 @@ func BuildUserEntries() (UserEnts, error) {
 			}
 
 			if pname == "" {
-				stat := fmt.Sprintf("%s/%d/stat", root, pid)
-				f, err := os.Open(stat)
+				var err error
+				pname, err = parseProcStat(root, pid)
 				if err != nil {
-					return nil, xerrors.Errorf("could not open %s: %w", stat, err)
+					return nil, err
 				}
-				defer f.Close()
-
-				var n, m string
-				if _, err := fmt.Fscan(f, &n, &m); err != nil {
-					return nil, xerrors.Errorf("could not scan '%s': %w", stat, err)
-				}
-				// workaround: Sscanf return io.ErrUnexpectedEOF without knowing why.
-				if _, err := fmt.Sscanf(m, "(%s)", &pname); err != nil && err != io.ErrUnexpectedEOF {
-					return nil, xerrors.Errorf("could not scan '%s': %w", m, err)
-				}
-				pname = strings.TrimRight(pname, ")")
 			}
 
 			userEnts[ino] = &UserEnt{
