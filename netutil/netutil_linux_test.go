@@ -31,4 +31,10 @@ func TestParseProcStat(t *testing.T) {
 	if stat.Pname != "nginx" {
 		t.Errorf("process name '%s' should be 'nginx'", stat.Pname)
 	}
+	if stat.Ppid != 1 {
+		t.Errorf("ppid '%d' should be 1", stat.Ppid)
+	}
+	if stat.Pgrp != 11185 {
+		t.Errorf("ppid '%d' should be 11185", stat.Pgrp)
+	}
 }

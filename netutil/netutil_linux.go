@@ -182,6 +182,7 @@ func LocalListeningPorts() ([]string, error) {
 type procStat struct {
 	Pname string // process name
 	Ppid  int    // parent process id
+	Pgrp  int    // process group id
 }
 
 func parseProcStat(root string, pid int) (*procStat, error) {
@@ -192,19 +193,27 @@ func parseProcStat(root string, pid int) (*procStat, error) {
 	}
 	defer f.Close()
 
-	var n, m string
-	if _, err := fmt.Fscan(f, &n, &m); err != nil {
+	var (
+		pid2  int
+		comm  string
+		state string
+		ppid  int
+		pgrp  int
+	)
+	if _, err := fmt.Fscan(f, &pid2, &comm, &state, &ppid, &pgrp); err != nil {
 		return nil, xerrors.Errorf("could not scan '%s': %w", stat, err)
 	}
 
 	var pname string
 	// workaround: Sscanf return io.ErrUnexpectedEOF without knowing why.
-	if _, err := fmt.Sscanf(m, "(%s)", &pname); err != nil && err != io.ErrUnexpectedEOF {
-		return nil, xerrors.Errorf("could not scan '%s': %w", m, err)
+	if _, err := fmt.Sscanf(comm, "(%s)", &pname); err != nil && err != io.ErrUnexpectedEOF {
+		return nil, xerrors.Errorf("could not scan '%s': %w", comm, err)
 	}
 
 	return &procStat{
 		Pname: strings.TrimRight(pname, ")"),
+		Ppid:  ppid,
+		Pgrp:  pgrp,
 	}, nil
 }
 
@@ -254,7 +263,7 @@ func BuildUserEntries() (UserEnts, error) {
 			return nil, err
 		}
 
-		var pname string
+		var stat *procStat
 
 		for _, d2 := range dir2 {
 			fd, err := strconv.Atoi(d2.Name())
@@ -281,19 +290,20 @@ func BuildUserEntries() (UserEnts, error) {
 				return nil, xerrors.Errorf("pid:%d '%s' should be pattern '[socket:\\%d]'", pid, lnk)
 			}
 
-			if pname == "" {
-				stat, err := parseProcStat(root, pid)
+			if stat == nil {
+				stat, err = parseProcStat(root, pid)
 				if err != nil {
 					return nil, err
 				}
-				pname = stat.Pname
 			}
 
 			userEnts[ino] = &UserEnt{
 				inode: ino,
 				fd:    fd,
 				pid:   pid,
-				pname: pname,
+				pname: stat.Pname,
+				ppid:  stat.Ppid,
+				pgrp:  stat.Pgrp,
 			}
 		}
 	}
