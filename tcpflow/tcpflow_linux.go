@@ -12,8 +12,8 @@ import (
 )
 
 // GetHostFlows gets host flows by netlink, and try to get by procfs if it fails.
-func GetHostFlows() (HostFlows, error) {
-	flows, err := GetHostFlowsByNetlink()
+func GetHostFlows(processes bool) (HostFlows, error) {
+	flows, err := GetHostFlowsByNetlink(processes)
 	if err != nil {
 		var netlinkErr *netutil.NetlinkError
 		if xerrors.As(err, &netlinkErr) {
@@ -26,7 +26,15 @@ func GetHostFlows() (HostFlows, error) {
 }
 
 // GetHostFlowsByNetlink gets host flows by Linux netlink API.
-func GetHostFlowsByNetlink() (HostFlows, error) {
+func GetHostFlowsByNetlink(processes bool) (HostFlows, error) {
+	var userEnts netutil.UserEnts
+	if processes {
+		var err error
+		userEnts, err = netutil.BuildUserEntries()
+		if err != nil {
+			return nil, err
+		}
+	}
 	conns, err := netutil.NetlinkConnections()
 	if err != nil {
 		return nil, err
@@ -40,18 +48,26 @@ func GetHostFlowsByNetlink() (HostFlows, error) {
 		if linux.TCPState(conn.State) == linux.TCP_LISTEN {
 			continue
 		}
+
+		var ent *netutil.UserEnt
+		if userEnts != nil {
+			ent = userEnts[conn.Inode]
+		}
+
 		lport, rport := fmt.Sprintf("%d", conn.SrcPort()), fmt.Sprintf("%d", conn.DstPort())
 		if contains(ports, lport) {
 			flows.insert(&HostFlow{
 				Direction: FlowPassive,
 				Local:     &AddrPort{Addr: conn.SrcIP().String(), Port: lport},
 				Peer:      &AddrPort{Addr: conn.DstIP().String(), Port: "many"},
+				UserEnt:   ent,
 			})
 		} else {
 			flows.insert(&HostFlow{
 				Direction: FlowActive,
 				Local:     &AddrPort{Addr: conn.SrcIP().String(), Port: "many"},
 				Peer:      &AddrPort{Addr: conn.DstIP().String(), Port: rport},
+				UserEnt:   ent,
 			})
 		}
 	}

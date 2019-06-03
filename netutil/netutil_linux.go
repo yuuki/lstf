@@ -6,9 +6,12 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -174,4 +177,118 @@ func LocalListeningPorts() ([]string, error) {
 		return nil, err
 	}
 	return FilterByLocalListeningPorts(conns)
+}
+
+func parseProcStat(root string, pid int) (string, error) {
+	stat := fmt.Sprintf("%s/%d/stat", root, pid)
+	f, err := os.Open(stat)
+	if err != nil {
+		return "", xerrors.Errorf("could not open %s: %w", stat, err)
+	}
+	defer f.Close()
+
+	var n, m string
+	if _, err := fmt.Fscan(f, &n, &m); err != nil {
+		return "", xerrors.Errorf("could not scan '%s': %w", stat, err)
+	}
+
+	var pname string
+	// workaround: Sscanf return io.ErrUnexpectedEOF without knowing why.
+	if _, err := fmt.Sscanf(m, "(%s)", &pname); err != nil && err != io.ErrUnexpectedEOF {
+		return "", xerrors.Errorf("could not scan '%s': %w", m, err)
+	}
+
+	return strings.TrimRight(pname, ")"), nil
+}
+
+// BuildUserEntries scans under /proc/%pid/fd/.
+func BuildUserEntries() (UserEnts, error) {
+	root := os.Getenv("PROC_ROOT")
+	if root == "" {
+		root = "/proc"
+	}
+
+	dir, err := ioutil.ReadDir(root)
+	if err != nil {
+		return nil, err
+	}
+
+	userEnts := make(UserEnts, 0)
+
+	for _, d := range dir {
+		// find only "<pid>"" directory
+		if !d.IsDir() {
+			continue
+		}
+		pid, err := strconv.Atoi(d.Name())
+		if err != nil {
+			continue
+		}
+
+		// skip self process
+		if pid == os.Getpid() {
+			continue
+		}
+
+		pidDir := filepath.Join(root, d.Name())
+		fdDir := filepath.Join(pidDir, "fd")
+
+		// exists fd?
+		fi, err := os.Stat(fdDir)
+		switch {
+		case err != nil:
+			return nil, err
+		case !fi.IsDir():
+			continue
+		}
+
+		dir2, err := ioutil.ReadDir(fdDir)
+		if err != nil {
+			return nil, err
+		}
+
+		var pname string
+
+		for _, d2 := range dir2 {
+			fd, err := strconv.Atoi(d2.Name())
+			if err != nil {
+				continue
+			}
+
+			lnk, err := os.Readlink(filepath.Join(fdDir, d2.Name()))
+			if err != nil {
+				return nil, err
+			}
+			// get socket inode
+			const pattern = "socket:["
+			ind := strings.Index(lnk, pattern)
+			if ind == -1 {
+				continue
+			}
+			var ino uint32
+			n, err := fmt.Sscanf(lnk, "socket:[%d]", &ino)
+			if err != nil {
+				return nil, err
+			}
+			if n != 1 {
+				return nil, xerrors.Errorf("pid:%d '%s' should be pattern '[socket:\\%d]'", pid, lnk)
+			}
+
+			if pname == "" {
+				var err error
+				pname, err = parseProcStat(root, pid)
+				if err != nil {
+					return nil, err
+				}
+			}
+
+			userEnts[ino] = &UserEnt{
+				inode: ino,
+				fd:    fd,
+				pid:   pid,
+				pname: pname,
+			}
+		}
+	}
+	return userEnts, nil
 }
