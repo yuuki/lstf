@@ -217,6 +217,23 @@ func parseProcStat(root string, pid int) (*procStat, error) {
 	}, nil
 }
 
+func parseSocketInode(lnk string) (uint32, error) {
+	const pattern = "socket:["
+	ind := strings.Index(lnk, pattern)
+	if ind == -1 {
+		return 0, nil
+	}
+	var ino uint32
+	n, err := fmt.Sscanf(lnk, "socket:[%d]", &ino)
+	if err != nil {
+		return 0, err
+	}
+	if n != 1 {
+		return 0, xerrors.Errorf("'%s' should be pattern '[socket:\\%d]'", lnk)
+	}
+	return ino, nil
+}
+
 // BuildUserEntries scans under /proc/%pid/fd/.
 func BuildUserEntries() (UserEnts, error) {
 	root := os.Getenv("PROC_ROOT")
@@ -270,24 +287,16 @@ func BuildUserEntries() (UserEnts, error) {
 			if err != nil {
 				continue
 			}
-
 			lnk, err := os.Readlink(filepath.Join(fdDir, d2.Name()))
 			if err != nil {
 				return nil, err
 			}
-			// get socket inode
-			const pattern = "socket:["
-			ind := strings.Index(lnk, pattern)
-			if ind == -1 {
-				continue
-			}
-			var ino uint32
-			n, err := fmt.Sscanf(lnk, "socket:[%d]", &ino)
+			ino, err := parseSocketInode(lnk)
 			if err != nil {
 				return nil, err
 			}
-			if n != 1 {
-				return nil, xerrors.Errorf("pid:%d '%s' should be pattern '[socket:\\%d]'", pid, lnk)
+			if ino == 0 {
+				continue
 			}
 
 			if stat == nil {
