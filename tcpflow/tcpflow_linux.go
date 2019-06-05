@@ -45,7 +45,10 @@ func GetHostFlowsByNetlink(processes bool) (HostFlows, error) {
 	}
 	flows := HostFlows{}
 	for _, conn := range conns {
-		if linux.TCPState(conn.State) == linux.TCP_LISTEN {
+		switch linux.TCPState(conn.State) {
+		case linux.TCP_LISTEN:
+		case linux.TCP_SYN_SENT:
+		case linux.TCP_SYN_RECV:
 			continue
 		}
 
