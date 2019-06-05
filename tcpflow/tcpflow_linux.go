@@ -89,9 +89,13 @@ func GetHostFlowsByProcfs() (HostFlows, error) {
 	}
 	flows := HostFlows{}
 	for _, conn := range conns {
-		if conn.Status == linux.TCP_LISTEN {
+		switch conn.Status {
+		case linux.TCP_LISTEN:
+		case linux.TCP_SYN_SENT:
+		case linux.TCP_SYN_RECV:
 			continue
 		}
+
 		lport := fmt.Sprintf("%d", conn.Laddr.Port)
 		rport := fmt.Sprintf("%d", conn.Raddr.Port)
 		if contains(ports, lport) {
