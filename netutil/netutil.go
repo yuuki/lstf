@@ -46,6 +46,10 @@ func (u *UserEnt) Pgrp() int {
 	return u.pgrp
 }
 
+func (u *UserEnt) SetInode(inode uint32) {
+	u.inode = inode
+}
+
 // UserEnts represents a hashmap of UserEnt as key is the inode.
 type UserEnts map[uint32]*UserEnt
 
