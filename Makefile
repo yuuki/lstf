@@ -23,7 +23,7 @@ devel-deps:
 	GO111MODULE=off go get -v \
 	golang.org/x/tools/cmd/cover \
 	github.com/mattn/goveralls \
-	github.com/motemen/gobump \
+	github.com/motemen/gobump/cmd/gobump \
 	github.com/Songmu/ghch \
 	github.com/Songmu/goxz \
 	github.com/tcnksm/ghr \
