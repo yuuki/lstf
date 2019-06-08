@@ -20,13 +20,14 @@ cover: devel-deps
 
 .PHONY: devel-deps
 devel-deps:
-	go get golang.org/x/tools/cmd/cover
-	go get github.com/mattn/goveralls
-	go get github.com/motemen/gobump
-	go get github.com/Songmu/ghch
-	go get github.com/Songmu/goxz
-	go get github.com/tcnksm/ghr
-	go get github.com/Songmu/gocredits/cmd/gocredits
+	GO111MODULE=off go get -v \
+	golang.org/x/tools/cmd/cover \
+	github.com/mattn/goveralls \
+	github.com/motemen/gobump \
+	github.com/Songmu/ghch \
+	github.com/Songmu/goxz \
+	github.com/tcnksm/ghr \
+	github.com/Songmu/gocredits/cmd/gocredits
 
 .PHONY: credits
 credits:
