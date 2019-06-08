@@ -39,10 +39,21 @@ func GetHostFlowsByNetlink(processes bool) (HostFlows, error) {
 	if err != nil {
 		return nil, err
 	}
-	ports, err := netutil.NetlinkFilterByLocalListeningPorts(conns)
+	lconns, err := netutil.NetlinkFilterByLocalListeningPorts(conns)
 	if err != nil {
 		return nil, err
 	}
+
+	ports := make([]string, 0, len(lconns))
+	lportEnt := make(netutil.UserEntByLport, len(lconns))
+	for _, lconn := range lconns {
+		sport := fmt.Sprintf("%d", lconn.SrcPort())
+		ports = append(ports, sport)
+		if userEnts != nil {
+			lportEnt[sport] = userEnts[lconn.Inode]
+		}
+	}
+
 	flows := HostFlows{}
 	for _, conn := range conns {
 		switch linux.TCPState(conn.State) {
@@ -61,6 +72,9 @@ func GetHostFlowsByNetlink(processes bool) (HostFlows, error) {
 
 		lport, rport := fmt.Sprintf("%d", conn.SrcPort()), fmt.Sprintf("%d", conn.DstPort())
 		if contains(ports, lport) {
+			if ent == nil {
+				ent = lportEnt[lport]
+			}
 			flows.insert(&HostFlow{
 				Direction: FlowPassive,
 				Local:     &AddrPort{Addr: conn.SrcIP().String(), Port: lport},

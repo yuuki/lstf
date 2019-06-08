@@ -109,6 +109,16 @@ func (hf HostFlows) insert(flow *HostFlow) {
 	key := flow.UniqKey()
 	if _, ok := hf[key]; !ok {
 		hf[key] = flow
+	} else {
+		// update inode if inode is zero
+		if hf[key].UserEnt == nil {
+			hf[key].UserEnt = flow.UserEnt
+		} else {
+			if hf[key].UserEnt.Inode() == 0 && flow.UserEnt != nil {
+				newinode := flow.UserEnt.Inode()
+				hf[key].UserEnt.SetInode(newinode)
+			}
+		}
 	}
 	hf[key].Connections++
 	return

@@ -40,19 +40,21 @@ func NetlinkConnections() ([]*linux.InetDiagMsg, error) {
 	return msgs, nil
 }
 
+type UserEntByLport map[string]*UserEnt
+
 // NetlinkFilterByLocalListeningPorts filters ConnectionStat slice by the local listening ports.
-func NetlinkFilterByLocalListeningPorts(conns []*linux.InetDiagMsg) ([]string, error) {
-	ports := []string{}
+func NetlinkFilterByLocalListeningPorts(conns []*linux.InetDiagMsg) ([]*linux.InetDiagMsg, error) {
+	lconns := []*linux.InetDiagMsg{}
 	for _, conn := range conns {
 		if linux.TCPState(conn.State) != linux.TCP_LISTEN {
 			continue
 		}
 		sip := conn.SrcIP().String()
 		if sip == "0.0.0.0" || sip == "127.0.0.1" || sip == "::" {
-			ports = append(ports, fmt.Sprintf("%d", conn.SrcPort()))
+			lconns = append(lconns, conn)
 		}
 	}
-	return ports, nil
+	return lconns, nil
 }
 
 // NetlinkLodalListeningPorts returns the local listening ports.
@@ -179,26 +181,59 @@ func LocalListeningPorts() ([]string, error) {
 	return FilterByLocalListeningPorts(conns)
 }
 
-func parseProcStat(root string, pid int) (string, error) {
+type procStat struct {
+	Pname string // process name
+	Ppid  int    // parent process id
+	Pgrp  int    // process group id
+}
+
+func parseProcStat(root string, pid int) (*procStat, error) {
 	stat := fmt.Sprintf("%s/%d/stat", root, pid)
 	f, err := os.Open(stat)
 	if err != nil {
-		return "", xerrors.Errorf("could not open %s: %w", stat, err)
+		return nil, xerrors.Errorf("could not open %s: %w", stat, err)
 	}
 	defer f.Close()
 
-	var n, m string
-	if _, err := fmt.Fscan(f, &n, &m); err != nil {
-		return "", xerrors.Errorf("could not scan '%s': %w", stat, err)
+	var (
+		pid2  int
+		comm  string
+		state string
+		ppid  int
+		pgrp  int
+	)
+	if _, err := fmt.Fscan(f, &pid2, &comm, &state, &ppid, &pgrp); err != nil {
+		return nil, xerrors.Errorf("could not scan '%s': %w", stat, err)
 	}
 
 	var pname string
 	// workaround: Sscanf return io.ErrUnexpectedEOF without knowing why.
-	if _, err := fmt.Sscanf(m, "(%s)", &pname); err != nil && err != io.ErrUnexpectedEOF {
-		return "", xerrors.Errorf("could not scan '%s': %w", m, err)
+	if _, err := fmt.Sscanf(comm, "(%s)", &pname); err != nil && err != io.ErrUnexpectedEOF {
+		return nil, xerrors.Errorf("could not scan '%s': %w", comm, err)
 	}
 
-	return strings.TrimRight(pname, ")"), nil
+	return &procStat{
+		Pname: strings.TrimRight(pname, ")"),
+		Ppid:  ppid,
+		Pgrp:  pgrp,
+	}, nil
+}
+
+func parseSocketInode(lnk string) (uint32, error) {
+	const pattern = "socket:["
+	ind := strings.Index(lnk, pattern)
+	if ind == -1 {
+		return 0, nil
+	}
+	var ino uint32
+	n, err := fmt.Sscanf(lnk, "socket:[%d]", &ino)
+	if err != nil {
+		return 0, err
+	}
+	if n != 1 {
+		return 0, xerrors.Errorf("'%s' should be pattern '[socket:\\%d]'", lnk)
+	}
+	return ino, nil
 }
 
 // BuildUserEntries scans under /proc/%pid/fd/.
@@ -247,36 +282,27 @@ func BuildUserEntries() (UserEnts, error) {
 			return nil, err
 		}
 
-		var pname string
+		var stat *procStat
 
 		for _, d2 := range dir2 {
 			fd, err := strconv.Atoi(d2.Name())
 			if err != nil {
 				continue
 			}
-
 			lnk, err := os.Readlink(filepath.Join(fdDir, d2.Name()))
 			if err != nil {
 				return nil, err
 			}
-			// get socket inode
-			const pattern = "socket:["
-			ind := strings.Index(lnk, pattern)
-			if ind == -1 {
-				continue
-			}
-			var ino uint32
-			n, err := fmt.Sscanf(lnk, "socket:[%d]", &ino)
+			ino, err := parseSocketInode(lnk)
 			if err != nil {
 				return nil, err
 			}
-			if n != 1 {
-				return nil, xerrors.Errorf("pid:%d '%s' should be pattern '[socket:\\%d]'", pid, lnk)
+			if ino == 0 {
+				continue
 			}
 
-			if pname == "" {
-				var err error
-				pname, err = parseProcStat(root, pid)
+			if stat == nil {
+				stat, err = parseProcStat(root, pid)
 				if err != nil {
 					return nil, err
 				}
@@ -286,7 +312,9 @@ func BuildUserEntries() (UserEnts, error) {
 				inode: ino,
 				fd:    fd,
 				pid:   pid,
-				pname: pname,
+				pname: stat.Pname,
+				ppid:  stat.Ppid,
+				pgrp:  stat.Pgrp,
 			}
 		}
 	}

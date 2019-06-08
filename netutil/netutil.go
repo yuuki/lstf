@@ -12,6 +12,8 @@ type UserEnt struct {
 	fd    int    // file discryptor
 	pid   int    // process id
 	pname string // process name
+	ppid  int    // parent process id
+	pgrp  int    // process group id
 }
 
 // Inode returns inode.
@@ -32,6 +34,20 @@ func (u *UserEnt) Pid() int {
 // Pname returns process name.
 func (u *UserEnt) Pname() string {
 	return u.pname
+}
+
+// Ppid returns process id.
+func (u *UserEnt) Ppid() int {
+	return u.ppid
+}
+
+// Pgrp returns process group id.
+func (u *UserEnt) Pgrp() int {
+	return u.pgrp
+}
+
+func (u *UserEnt) SetInode(inode uint32) {
+	u.inode = inode
 }
 
 // UserEnts represents a hashmap of UserEnt as key is the inode.
