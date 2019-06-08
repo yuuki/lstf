@@ -24,8 +24,8 @@ devel-deps:
 	golang.org/x/tools/cmd/cover \
 	github.com/mattn/goveralls \
 	github.com/motemen/gobump/cmd/gobump \
-	github.com/Songmu/ghch \
-	github.com/Songmu/goxz \
+	github.com/Songmu/ghch/cmd/ghch \
+	github.com/Songmu/goxz/cmd/goxz \
 	github.com/tcnksm/ghr \
 	github.com/Songmu/gocredits/cmd/gocredits
 
