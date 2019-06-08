@@ -1,5 +1,12 @@
 # Changelog
 
+## [v0.5.0](https://github.com/yuuki/lstf/compare/v0.4.3...v0.5.0) (2019-06-08)
+
+* Aggregating process group [#13](https://github.com/yuuki/lstf/pull/13) ([yuuki](https://github.com/yuuki))
+* Add --processes option [#11](https://github.com/yuuki/lstf/pull/11) ([yuuki](https://github.com/yuuki))
+* Avoid to fallback to prasing procfs except netlink error [#12](https://github.com/yuuki/lstf/pull/12) ([yuuki](https://github.com/yuuki))
+* Migrate to Go modules [#10](https://github.com/yuuki/lstf/pull/10) ([yuuki](https://github.com/yuuki))
+
 ## [v0.4.3](https://github.com/yuuki/lstf/compare/v0.4.2...v0.4.3) (2018-06-19)
 
 * Improve performance by removing the inode and pid process [#9](https://github.com/yuuki/lstf/pull/9) ([yuuki](https://github.com/yuuki))
