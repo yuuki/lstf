@@ -40,19 +40,21 @@ func NetlinkConnections() ([]*linux.InetDiagMsg, error) {
 	return msgs, nil
 }
 
+type UserEntByLport map[string]*UserEnt
+
 // NetlinkFilterByLocalListeningPorts filters ConnectionStat slice by the local listening ports.
-func NetlinkFilterByLocalListeningPorts(conns []*linux.InetDiagMsg) ([]string, error) {
-	ports := []string{}
+func NetlinkFilterByLocalListeningPorts(conns []*linux.InetDiagMsg) ([]*linux.InetDiagMsg, error) {
+	lconns := []*linux.InetDiagMsg{}
 	for _, conn := range conns {
 		if linux.TCPState(conn.State) != linux.TCP_LISTEN {
 			continue
 		}
 		sip := conn.SrcIP().String()
 		if sip == "0.0.0.0" || sip == "127.0.0.1" || sip == "::" {
-			ports = append(ports, fmt.Sprintf("%d", conn.SrcPort()))
+			lconns = append(lconns, conn)
 		}
 	}
-	return ports, nil
+	return lconns, nil
 }
 
 // NetlinkLodalListeningPorts returns the local listening ports.
