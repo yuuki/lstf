@@ -31,7 +31,7 @@ devel-deps:
 
 .PHONY: credits
 credits:
-	@go get github.com/go-bindata/go-bindata/...
+	GO111MODULE=off go get github.com/go-bindata/go-bindata/...
 	gocredits -w .
 	go generate -x .
 
