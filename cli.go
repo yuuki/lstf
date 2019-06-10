@@ -79,22 +79,26 @@ func (c *CLI) Run(args []string) int {
 			return exitCodeErr
 		}
 	} else {
-		c.PrintHostFlows(flows, numeric)
+		c.PrintHostFlows(flows, numeric, processes)
 	}
 
 	return exitCodeOK
 }
 
 // PrintHostFlows prints the host flows.
-func (c *CLI) PrintHostFlows(flows tcpflow.HostFlows, numeric bool) {
+func (c *CLI) PrintHostFlows(flows tcpflow.HostFlows, numeric bool, processes bool) {
 	// Format in tab-separated columns with a tab stop of 8.
 	tw := tabwriter.NewWriter(c.outStream, 0, 8, 0, '\t', 0)
-	fmt.Fprintln(tw, "Local Address:Port\t <--> \tPeer Address:Port \tConnections")
+	fmt.Fprintf(tw, "Local Address:Port\t<-->\tPeer Address:Port\tConnections")
+	if processes {
+		fmt.Fprintf(tw, "\tProcess")
+	}
+	fmt.Fprintln(tw)
 	for _, flow := range flows {
 		if !numeric {
 			flow.ReplaceLookupedName()
 		}
-		fmt.Fprintf(tw, "%s\n", flow)
+		fmt.Fprintln(tw, flow)
 	}
 	tw.Flush()
 }

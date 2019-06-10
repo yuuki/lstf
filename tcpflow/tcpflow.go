@@ -72,18 +72,18 @@ type HostFlow struct {
 func (f *HostFlow) String() string {
 	var entStr string
 	if f.UserEnt != nil {
-		entStr = fmt.Sprintf("\t(\"%s\")", f.UserEnt.Pname())
+		entStr = fmt.Sprintf("\t(\"%s\",pgid=%d)", f.UserEnt.Pname(), f.UserEnt.Pgrp())
 	}
 	switch f.Direction {
 	case FlowActive:
-		return fmt.Sprintf("%s\t --> \t%s \t%d%s", f.Local, f.Peer, f.Connections, entStr)
+		return fmt.Sprintf("%s\t-->\t%s\t%d%s", f.Local, f.Peer, f.Connections, entStr)
 	case FlowPassive:
-		return fmt.Sprintf("%s\t <-- \t%s \t%d%s", f.Local, f.Peer, f.Connections, entStr)
+		return fmt.Sprintf("%s\t<--\t%s\t%d%s", f.Local, f.Peer, f.Connections, entStr)
 	}
 	return ""
 }
 
-// UniqKey returns the unique key for connections aggregation
+// UniqKey returns the unique identifier key for connections flow.
 func (f *HostFlow) UniqKey() string {
 	return fmt.Sprintf("%d-%s-%s", f.Direction, f.Local, f.Peer)
 }
