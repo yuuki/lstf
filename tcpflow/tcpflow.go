@@ -72,7 +72,7 @@ type HostFlow struct {
 func (f *HostFlow) String() string {
 	var entStr string
 	if f.UserEnt != nil {
-		entStr = fmt.Sprintf("\t(\"%s\")", f.UserEnt.Pname())
+		entStr = fmt.Sprintf("\t(\"%s\",pgid=%d)", f.UserEnt.Pname(), f.UserEnt.Pgrp())
 	}
 	switch f.Direction {
 	case FlowActive:
