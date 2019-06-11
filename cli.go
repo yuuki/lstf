@@ -7,8 +7,11 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
+	"strconv"
 	"text/tabwriter"
 
+	"github.com/yuuki/lstf/dlog"
 	"github.com/yuuki/lstf/tcpflow"
 )
 
@@ -20,6 +23,22 @@ const (
 var (
 	creditsText = string(MustAsset("CREDITS"))
 )
+
+func setDebugOutputLevel(debug bool) {
+	if debug {
+		dlog.Debug = true
+	}
+
+	debugEnv := os.Getenv("LSTF_DEBUG")
+	if debugEnv != "" {
+		showDebug, err := strconv.ParseBool(debugEnv)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing boolean value from LSTF_DEBUG: %s\n", err)
+			os.Exit(1)
+		}
+		dlog.Debug = showDebug
+	}
+}
 
 // CLI is the command line object.
 type CLI struct {
@@ -39,6 +58,7 @@ func (c *CLI) Run(args []string) int {
 		json      bool
 		ver       bool
 		credits   bool
+		debug     bool
 	)
 	flags := flag.NewFlagSet(name, flag.ContinueOnError)
 	flags.SetOutput(c.errStream)
@@ -53,9 +73,12 @@ func (c *CLI) Run(args []string) int {
 	flags.BoolVar(&json, "json", false, "")
 	flags.BoolVar(&ver, "version", false, "")
 	flags.BoolVar(&credits, "credits", false, "")
+	flags.BoolVar(&debug, "debug", false, "")
 	if err := flags.Parse(args[1:]); err != nil {
 		return exitCodeErr
 	}
+
+	setDebugOutputLevel(debug)
 
 	if ver {
 		fmt.Fprintf(c.errStream, "%s version %s, build %s, date %s \n", name, version, commit, date)
@@ -69,13 +92,17 @@ func (c *CLI) Run(args []string) int {
 
 	flows, err := tcpflow.GetHostFlows(processes)
 	if err != nil {
-		log.Printf("failed to get host flows: %v", err)
+		if dlog.Debug {
+			dlog.Debugf("failed to get host flows: %+v\n", err)
+		} else {
+			log.Printf("failed to get host flows: %v\n", err)
+		}
 		return exitCodeErr
 	}
 
 	if json {
 		if err := c.PrintHostFlowsAsJSON(flows, numeric); err != nil {
-			log.Printf("failed to print json: %v", err)
+			log.Printf("failed to print json: %v\n", err)
 			return exitCodeErr
 		}
 	} else {
