@@ -118,17 +118,20 @@ func GetHostFlowsByProcfs() (HostFlows, error) {
 		rport := fmt.Sprintf("%d", conn.Raddr.Port)
 		if contains(ports, lport) {
 			flows.insert(&HostFlow{
-				Direction: FlowPassive,
-				Local:     &AddrPort{Addr: conn.Laddr.IP, Port: lport},
-				Peer:      &AddrPort{Addr: conn.Raddr.IP, Port: "many"},
-			})
-		} else {
-			flows.insert(&HostFlow{
-				Direction: FlowActive,
-				Local:     &AddrPort{Addr: conn.Laddr.IP, Port: "many"},
-				Peer:      &AddrPort{Addr: conn.Raddr.IP, Port: rport},
-			})
+				Direction: FlowPaserEnt.Inode()
+				hf[key].UserEnt.SetInode(newinode)
+			}
 		}
 	}
-	return flows, nil
+	hf[key].Connections++
+	return
+}
+
+func contains(strs []string, s string) bool {
+	for _, str := range strs {
+		if str == s {
+			return true
+		}
+	}
+	return false
 }

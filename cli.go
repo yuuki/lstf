@@ -24,11 +24,9 @@ var (
 	creditsText = string(MustAsset("CREDITS"))
 )
 
-func setDebugOutputLevel() {
-	for _, f := range os.Args {
-		if f == "-D" || f == "--debug" || f == "-debug" {
-			dlog.Debug = true
-		}
+func setDebugOutputLevel(debug bool) {
+	if debug {
+		dlog.Debug = true
 	}
 
 	debugEnv := os.Getenv("LSTF_DEBUG")
@@ -80,6 +78,8 @@ func (c *CLI) Run(args []string) int {
 		return exitCodeErr
 	}
 
+	setDebugOutputLevel(debug)
+
 	if ver {
 		fmt.Fprintf(c.errStream, "%s version %s, build %s, date %s \n", name, version, commit, date)
 		return exitCodeOK
@@ -92,13 +92,17 @@ func (c *CLI) Run(args []string) int {
 
 	flows, err := tcpflow.GetHostFlows(processes)
 	if err != nil {
-		log.Printf("failed to get host flows: %v", err)
+		if dlog.Debug {
+			dlog.Debugf("failed to get host flows: %+v\n", err)
+		} else {
+			log.Printf("failed to get host flows: %v\n", err)
+		}
 		return exitCodeErr
 	}
 
 	if json {
 		if err := c.PrintHostFlowsAsJSON(flows, numeric); err != nil {
-			log.Printf("failed to print json: %v", err)
+			log.Printf("failed to print json: %v\n", err)
 			return exitCodeErr
 		}
 	} else {
