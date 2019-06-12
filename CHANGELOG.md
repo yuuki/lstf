@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.5.2](https://github.com/yuuki/lstf/compare/v0.5.1...v0.5.2) (2019-06-12)
+
+
 ## [v0.5.1](https://github.com/yuuki/lstf/compare/v0.5.0...v0.5.1) (2019-06-12)
 
 * Ignore 'readlink: no such file or directory' [#16](https://github.com/yuuki/lstf/pull/16) ([yuuki](https://github.com/yuuki))
