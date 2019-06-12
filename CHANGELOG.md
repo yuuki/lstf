@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.5.3](https://github.com/yuuki/lstf/compare/v0.5.2...v0.5.3) (2019-06-12)
+
+
 ## [v0.5.2](https://github.com/yuuki/lstf/compare/v0.5.1...v0.5.2) (2019-06-12)
 
 
