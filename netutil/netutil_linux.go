@@ -14,11 +14,13 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"syscall"
 
 	"github.com/elastic/gosigar/sys/linux"
+	gnet "github.com/shirou/gopsutil/net"
 	"golang.org/x/xerrors"
 
-	gnet "github.com/shirou/gopsutil/net"
+	"github.com/yuuki/lstf/dlog"
 )
 
 // NetlinkError represents netlink error.
@@ -289,9 +291,18 @@ func BuildUserEntries() (UserEnts, error) {
 			if err != nil {
 				continue
 			}
-			lnk, err := os.Readlink(filepath.Join(fdDir, d2.Name()))
+			fdpath := filepath.Join(fdDir, d2.Name())
+			lnk, err := os.Readlink(fdpath)
 			if err != nil {
-				return nil, err
+				pathErr := err.(*os.PathError)
+				errno := pathErr.Err.(syscall.Errno)
+				if errno == syscall.ENOENT {
+					// ignore "readlink: no such file or directory"
+					// because fdpath is disappear depending on timing
+					dlog.Debugf("%v\n", pathErr)
+					continue
+				}
+				return nil, xerrors.Errorf("readlink %s: %v", fdpath, err)
 			}
 			ino, err := parseSocketInode(lnk)
 			if err != nil {
