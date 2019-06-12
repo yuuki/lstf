@@ -274,14 +274,20 @@ func BuildUserEntries() (UserEnts, error) {
 		fi, err := os.Stat(fdDir)
 		switch {
 		case err != nil:
-			return nil, err
+			return nil, xerrors.Errorf("stat %s: %v", fdDir, err)
 		case !fi.IsDir():
 			continue
 		}
 
 		dir2, err := ioutil.ReadDir(fdDir)
 		if err != nil {
-			return nil, err
+			pathErr := err.(*os.PathError)
+			errno := pathErr.Err.(syscall.Errno)
+			if errno == syscall.EACCES {
+				// ignore "open: <path> permission denied"
+				continue
+			}
+			return nil, xerrors.Errorf("readdir %s: %v", errno, err)
 		}
 
 		var stat *procStat
