@@ -65,7 +65,7 @@ type HostFlow struct {
 	Local       *AddrPort        `json:"local"`
 	Peer        *AddrPort        `json:"peer"`
 	Connections int64            `json:"connections"`
-	UserEnt     *netutil.UserEnt `json:"user_entries"`
+	UserEnt     *netutil.UserEnt `json:"user_entries,omitempty"`
 }
 
 // String returns the string representation of HostFlow.
