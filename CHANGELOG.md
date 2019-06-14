@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.5.4](https://github.com/yuuki/lstf/compare/v0.5.3...v0.5.4) (2019-06-14)
+
+* JSONize process field [#18](https://github.com/yuuki/lstf/pull/18) ([yuuki](https://github.com/yuuki))
+* Continue if it occurs permission denied error when specified --processes [#17](https://github.com/yuuki/lstf/pull/17) ([yuuki](https://github.com/yuuki))
+
 ## [v0.5.3](https://github.com/yuuki/lstf/compare/v0.5.2...v0.5.3) (2019-06-12)
 
 
