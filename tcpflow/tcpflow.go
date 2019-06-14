@@ -59,20 +59,26 @@ func (a *AddrPort) PortInt() int {
 	return i
 }
 
+// Process represents a OS process.
+type Process struct {
+	Name string `json:"name"`
+	Pgid int    `json:"pgid"`
+}
+
 // HostFlow represents a `host flow`.
 type HostFlow struct {
-	Direction   FlowDirection    `json:"direction"`
-	Local       *AddrPort        `json:"local"`
-	Peer        *AddrPort        `json:"peer"`
-	Connections int64            `json:"connections"`
-	UserEnt     *netutil.UserEnt `json:"user_entries"`
+	Direction   FlowDirection `json:"direction"`
+	Local       *AddrPort     `json:"local"`
+	Peer        *AddrPort     `json:"peer"`
+	Connections int64         `json:"connections"`
+	Process     *Process      `json:"process,omitempty"`
 }
 
 // String returns the string representation of HostFlow.
 func (f *HostFlow) String() string {
 	var entStr string
-	if f.UserEnt != nil {
-		entStr = fmt.Sprintf("\t(\"%s\",pgid=%d)", f.UserEnt.Pname(), f.UserEnt.Pgrp())
+	if f.Process != nil {
+		entStr = fmt.Sprintf("\t(\"%s\",pgid=%d)", f.Process.Name, f.Process.Pgid)
 	}
 	switch f.Direction {
 	case FlowActive:
@@ -110,14 +116,8 @@ func (hf HostFlows) insert(flow *HostFlow) {
 	if _, ok := hf[key]; !ok {
 		hf[key] = flow
 	} else {
-		// update inode if inode is zero
-		if hf[key].UserEnt == nil {
-			hf[key].UserEnt = flow.UserEnt
-		} else {
-			if hf[key].UserEnt.Inode() == 0 && flow.UserEnt != nil {
-				newinode := flow.UserEnt.Inode()
-				hf[key].UserEnt.SetInode(newinode)
-			}
+		if hf[key].Process == nil {
+			hf[key].Process = flow.Process
 		}
 	}
 	hf[key].Connections++

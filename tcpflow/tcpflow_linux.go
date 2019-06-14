@@ -66,28 +66,43 @@ func GetHostFlowsByNetlink(opt *GetHostFlowsOption) (HostFlows, error) {
 		}
 
 		var ent *netutil.UserEnt
-		if userEnts != nil {
+		// inode 0 means that it provides no process information
+		if userEnts != nil && conn.Inode != 0 {
 			ent = userEnts[conn.Inode]
 		}
 
 		lport, rport := fmt.Sprintf("%d", conn.SrcPort()), fmt.Sprintf("%d", conn.DstPort())
 		if contains(ports, lport) {
+			// passive open
 			if ent == nil {
 				ent = lportEnt[lport]
 			}
-			flows.insert(&HostFlow{
+			hf := &HostFlow{
 				Direction: FlowPassive,
 				Local:     &AddrPort{Addr: conn.SrcIP().String(), Port: lport},
 				Peer:      &AddrPort{Addr: conn.DstIP().String(), Port: "many"},
-				UserEnt:   ent,
-			})
+			}
+			if ent != nil {
+				hf.Process = &Process{
+					Name: ent.Pname(),
+					Pgid: ent.Pgrp(),
+				}
+			}
+			flows.insert(hf)
 		} else {
-			flows.insert(&HostFlow{
+			// active open
+			hf := &HostFlow{
 				Direction: FlowActive,
 				Local:     &AddrPort{Addr: conn.SrcIP().String(), Port: "many"},
 				Peer:      &AddrPort{Addr: conn.DstIP().String(), Port: rport},
-				UserEnt:   ent,
-			})
+			}
+			if ent != nil {
+				hf.Process = &Process{
+					Name: ent.Pname(),
+					Pgid: ent.Pgrp(),
+				}
+			}
+			flows.insert(hf)
 		}
 	}
 	return flows, nil
