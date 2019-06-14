@@ -132,3 +132,8 @@ func contains(strs []string, s string) bool {
 	}
 	return false
 }
+
+// GetHostFlowsOption represens an option for func GetHostFlows().
+type GetHostFlowsOption struct {
+	Processes bool
+}

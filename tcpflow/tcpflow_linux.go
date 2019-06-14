@@ -12,8 +12,8 @@ import (
 )
 
 // GetHostFlows gets host flows by netlink, and try to get by procfs if it fails.
-func GetHostFlows(processes bool) (HostFlows, error) {
-	flows, err := GetHostFlowsByNetlink(processes)
+func GetHostFlows(opt *GetHostFlowsOption) (HostFlows, error) {
+	flows, err := GetHostFlowsByNetlink(opt)
 	if err != nil {
 		var netlinkErr *netutil.NetlinkError
 		if xerrors.As(err, &netlinkErr) {
@@ -26,9 +26,9 @@ func GetHostFlows(processes bool) (HostFlows, error) {
 }
 
 // GetHostFlowsByNetlink gets host flows by Linux netlink API.
-func GetHostFlowsByNetlink(processes bool) (HostFlows, error) {
+func GetHostFlowsByNetlink(opt *GetHostFlowsOption) (HostFlows, error) {
 	var userEnts netutil.UserEnts
-	if processes {
+	if opt.Processes {
 		var err error
 		userEnts, err = netutil.BuildUserEntries()
 		if err != nil {

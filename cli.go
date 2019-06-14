@@ -90,7 +90,9 @@ func (c *CLI) Run(args []string) int {
 		return exitCodeOK
 	}
 
-	flows, err := tcpflow.GetHostFlows(processes)
+	flows, err := tcpflow.GetHostFlows(&tcpflow.GetHostFlowsOption{
+		Processes: processes,
+	})
 	if err != nil {
 		if dlog.Debug {
 			log.Printf("failed to get host flows: %+v\n", err)
