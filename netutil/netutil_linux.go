@@ -140,16 +140,16 @@ func ProcfsConnections() ([]*ConnectionStat, error) {
 func decodeAddress(src string) (Addr, error) {
 	t := strings.Split(src, ":")
 	if len(t) != 2 {
-		return Addr{}, fmt.Errorf("does not contain port, %s", src)
+		return Addr{}, xerrors.Errorf("does not contain port, %s", src)
 	}
 	addr := t[0]
 	port, err := strconv.ParseInt("0x"+t[1], 0, 64)
 	if err != nil {
-		return Addr{}, fmt.Errorf("invalid port, %s", src)
+		return Addr{}, xerrors.Errorf("invalid port, %s", src)
 	}
 	decoded, err := hex.DecodeString(addr)
 	if err != nil {
-		return Addr{}, fmt.Errorf("decode error, %s", err)
+		return Addr{}, xerrors.Errorf("decode error, %s", err)
 	}
 	var ip net.IP
 	// Assumes this is little_endian

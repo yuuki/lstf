@@ -13,6 +13,7 @@ import (
 
 	"github.com/yuuki/lstf/dlog"
 	"github.com/yuuki/lstf/tcpflow"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -141,7 +142,7 @@ func (c *CLI) PrintHostFlowsAsJSON(flows tcpflow.HostFlows, numeric bool) error 
 	}
 	b, err := json.Marshal(flows)
 	if err != nil {
-		return err
+		return xerrors.Errorf("failed to marshal json: %v", err)
 	}
 	c.outStream.Write(b)
 	return nil

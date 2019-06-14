@@ -3,6 +3,8 @@ package netutil
 import (
 	"net"
 	"strings"
+
+	"golang.org/x/xerrors"
 )
 
 // UserEnt represents a detail of network socket.
@@ -66,7 +68,7 @@ func ResolveAddr(addr string) string {
 func LocalIPAddrs() ([]string, error) {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to get local addresses: %v", err)
 	}
 	addrStrings := make([]string, 0, len(addrs))
 	for _, a := range addrs {

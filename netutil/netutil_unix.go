@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	gnet "github.com/shirou/gopsutil/net"
+	"golang.org/x/xerrors"
 )
 
 // FilterByLocalListeningPorts filters ConnectionStat slice by the local listening ports.
@@ -41,7 +42,7 @@ func FilterByLocalListeningPorts(conns []gnet.ConnectionStat) ([]string, error) 
 func LocalListeningPorts() ([]string, error) {
 	conns, err := gnet.Connections("tcp")
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("gopsutil/net.Connections() failed: %v", err)
 	}
 	return FilterByLocalListeningPorts(conns)
 }

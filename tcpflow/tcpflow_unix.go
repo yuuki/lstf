@@ -7,6 +7,7 @@ import (
 
 	gnet "github.com/shirou/gopsutil/net"
 	"github.com/yuuki/lstf/netutil"
+	"golang.org/x/xerrors"
 )
 
 // GetHostFlows gets host flows.
@@ -14,7 +15,7 @@ import (
 func GetHostFlows(opt *GetHostFlowsOption) (HostFlows, error) {
 	conns, err := gnet.Connections("tcp")
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("gopsutil/net.Connections(): %v", err)
 	}
 	ports, err := netutil.FilterByLocalListeningPorts(conns)
 	if err != nil {
