@@ -47,7 +47,7 @@ $ lstf -n | sort -nrk4
 
 ### JSON format
 
-```shell
+```shell-session
 $ lstf -n --json | jq -r -M '.'
 [
   {
