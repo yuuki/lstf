@@ -45,3 +45,8 @@ crossbuild: devel-deps credits
 release: devel-deps
 	_tools/release
 	_tools/upload_artifacts
+
+.PHONY: lint
+lint:
+	go vet ./...
+	golint -set_exit_status ./...

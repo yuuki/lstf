@@ -48,6 +48,7 @@ func (u *UserEnt) Pgrp() int {
 	return u.pgrp
 }
 
+// SetInode set the inode.
 func (u *UserEnt) SetInode(inode uint32) {
 	u.inode = inode
 }
