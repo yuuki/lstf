@@ -50,3 +50,20 @@ release: devel-deps
 lint:
 	go vet ./...
 	golint -set_exit_status ./...
+
+.PHONY: check-deps
+check-deps:
+	GO111MODULE=off go get -v \
+        honnef.co/go/tools/cmd/staticcheck \
+		github.com/kisielk/errcheck \
+		gitlab.com/opennota/check/cmd/aligncheck \
+		gitlab.com/opennota/check/cmd/structcheck \
+		gitlab.com/opennota/check/cmd/varcheck
+
+.PHONY: check
+check:
+	errcheck -asserts -blank -ignoretests -ignoregenerated -ignore 'Close,Fprint' ./... || true
+	staticcheck ./... || true
+	aligncheck ./... || true
+	structcheck ./... || true
+	varcheck ./... || true

@@ -121,7 +121,6 @@ func (hf HostFlows) insert(flow *HostFlow) {
 		}
 	}
 	hf[key].Connections++
-	return
 }
 
 func contains(strs []string, s string) bool {
