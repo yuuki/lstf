@@ -65,6 +65,18 @@ func GetHostFlowsByNetlink(opt *GetHostFlowsOption) (HostFlows, error) {
 			continue
 		}
 
+		switch opt.Filter {
+		case FilterAll:
+		case FilterPublic:
+			if netutil.IsPrivateIP(conn.DstIP()) {
+				continue
+			}
+		case FilterPrivate:
+			if !netutil.IsPrivateIP(conn.DstIP()) {
+				continue
+			}
+		}
+
 		var ent *netutil.UserEnt
 		// inode 0 means that it provides no process information
 		if userEnts != nil && conn.Inode != 0 {
