@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.6.0](https://github.com/yuuki/lstf/compare/v0.5.4...v0.6.0) (2019-08-20)
+
+* --filter option [#19](https://github.com/yuuki/lstf/pull/19) ([yuuki](https://github.com/yuuki))
+
 ## [v0.5.4](https://github.com/yuuki/lstf/compare/v0.5.3...v0.5.4) (2019-06-14)
 
 * JSONize process field [#18](https://github.com/yuuki/lstf/pull/18) ([yuuki](https://github.com/yuuki))
