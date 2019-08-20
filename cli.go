@@ -57,9 +57,11 @@ func (c *CLI) Run(args []string) int {
 		numeric   bool
 		processes bool
 		json      bool
-		ver       bool
-		credits   bool
-		debug     bool
+		filter    string
+
+		ver     bool
+		credits bool
+		debug   bool
 	)
 	flags := flag.NewFlagSet(name, flag.ContinueOnError)
 	flags.SetOutput(c.errStream)
@@ -72,6 +74,8 @@ func (c *CLI) Run(args []string) int {
 	flags.BoolVar(&processes, "processes", false, "")
 	flags.BoolVar(&numeric, "", false, "")
 	flags.BoolVar(&json, "json", false, "")
+	flags.StringVar(&filter, "f", tcpflow.FilterAll, "")
+	flags.StringVar(&filter, "filter", tcpflow.FilterAll, "")
 	flags.BoolVar(&ver, "version", false, "")
 	flags.BoolVar(&credits, "credits", false, "")
 	flags.BoolVar(&debug, "debug", false, "")
@@ -91,8 +95,16 @@ func (c *CLI) Run(args []string) int {
 		return exitCodeOK
 	}
 
+	if !(filter == tcpflow.FilterAll ||
+		filter == tcpflow.FilterPublic ||
+		filter == tcpflow.FilterPrivate) {
+		fmt.Fprint(c.errStream, helpText)
+		return exitCodeErr
+	}
+
 	flows, err := tcpflow.GetHostFlows(&tcpflow.GetHostFlowsOption{
 		Processes: processes,
+		Filter:    filter,
 	})
 	if err != nil {
 		if dlog.Debug {
@@ -156,6 +168,7 @@ Options:
   --numeric, -n             show numerical addresses instead of trying to determine symbolic host names.
   --processes, -p           show process using socket
   --json                    print results as json format
+  --filter, -f              filter results by "all", "public" or "private" (default: "all")
   --version, -v	            print version
   --help, -h                print help
   --credits                 print CREDITS

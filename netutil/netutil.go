@@ -1,6 +1,7 @@
 package netutil
 
 import (
+	"fmt"
 	"net"
 	"strings"
 
@@ -16,6 +17,25 @@ type UserEnt struct {
 	pname string // process name
 	ppid  int    // parent process id
 	pgrp  int    // process group id
+}
+
+var privateIPBlocks []*net.IPNet
+
+func init() {
+	for _, cidr := range []string{
+		"10.0.0.0/8",     // RFC1918
+		"172.16.0.0/12",  // RFC1918
+		"192.168.0.0/16", // RFC1918
+		"::1/128",        // IPv6 loopback
+		"fe80::/10",      // IPv6 link-local
+		"fc00::/7",       // IPv6 unique local addr
+	} {
+		_, block, err := net.ParseCIDR(cidr)
+		if err != nil {
+			panic(fmt.Errorf("parse error on %q: %v", cidr, err))
+		}
+		privateIPBlocks = append(privateIPBlocks, block)
+	}
 }
 
 // Inode returns inode.
@@ -80,4 +100,17 @@ func LocalIPAddrs() ([]string, error) {
 		}
 	}
 	return addrStrings, nil
+}
+
+// IsPrivateIP returns whether 'ip' is in private network space.
+func IsPrivateIP(ip net.IP) bool {
+	if ip.IsLoopback() {
+		return true
+	}
+	for _, block := range privateIPBlocks {
+		if block.Contains(ip) {
+			return true
+		}
+	}
+	return false
 }

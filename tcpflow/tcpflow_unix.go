@@ -4,6 +4,7 @@ package tcpflow
 
 import (
 	"fmt"
+	"net"
 
 	gnet "github.com/shirou/gopsutil/net"
 	"github.com/yuuki/lstf/netutil"
@@ -26,6 +27,19 @@ func GetHostFlows(opt *GetHostFlowsOption) (HostFlows, error) {
 		if conn.Status == "LISTEN" {
 			continue
 		}
+
+		switch opt.Filter {
+		case FilterAll:
+		case FilterPublic:
+			if netutil.IsPrivateIP(net.ParseIP(conn.Raddr.IP)) {
+				continue
+			}
+		case FilterPrivate:
+			if !netutil.IsPrivateIP(net.ParseIP(conn.Raddr.IP)) {
+				continue
+			}
+		}
+
 		lport := fmt.Sprintf("%d", conn.Laddr.Port)
 		rport := fmt.Sprintf("%d", conn.Raddr.Port)
 		if contains(ports, lport) {

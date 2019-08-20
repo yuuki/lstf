@@ -19,6 +19,10 @@ const (
 	FlowActive
 	// FlowPassive are 'passive open'
 	FlowPassive
+
+	FilterAll     = "all"
+	FilterPublic  = "public"
+	FilterPrivate = "private"
 )
 
 // String returns string representation.
@@ -135,4 +139,5 @@ func contains(strs []string, s string) bool {
 // GetHostFlowsOption represens an option for func GetHostFlows().
 type GetHostFlowsOption struct {
 	Processes bool
+	Filter    string
 }
