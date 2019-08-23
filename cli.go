@@ -138,7 +138,7 @@ func (c *CLI) PrintHostFlows(flows tcpflow.HostFlows, numeric bool, processes bo
 	fmt.Fprintln(tw)
 	for _, flow := range flows {
 		if !numeric {
-			flow.ReplaceLookupedName()
+			flow.SetLookupedName()
 		}
 		fmt.Fprintln(tw, flow)
 	}
@@ -149,7 +149,7 @@ func (c *CLI) PrintHostFlows(flows tcpflow.HostFlows, numeric bool, processes bo
 func (c *CLI) PrintHostFlowsAsJSON(flows tcpflow.HostFlows, numeric bool) error {
 	for _, flow := range flows {
 		if !numeric {
-			flow.ReplaceLookupedName()
+			flow.SetLookupedName()
 		}
 	}
 	b, err := json.Marshal(flows)
