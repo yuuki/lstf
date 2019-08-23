@@ -48,15 +48,17 @@ $ lstf -n | sort -nrk4
 ### JSON format
 
 ```shell-session
-$ lstf -n --json | jq -r -M '.'
+$ lstf --json | jq -r -M '.'
 [
   {
     "direction": "active",
     "local": {
-      "Addr": "10.0.1.9",
-      "Port": "many"
+      "name"| "app01.local",
+      "addr": "10.0.1.9",
+      "port": "many"
     },
     "peer": {
+      "name"| "db01.local",
       "addr": "10.0.100.1",
       "port": "3306"
     },
@@ -65,10 +67,12 @@ $ lstf -n --json | jq -r -M '.'
   {
     "direction": "passive",
     "local": {
+      "name"| "app01.local",
       "addr": "10.0.1.9",
       "port": "80"
     },
     "peer": {
+      "name"| "web01.local",
       "addr": "10.0.200.1",
       "port": "many"
     },
