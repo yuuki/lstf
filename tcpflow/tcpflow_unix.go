@@ -56,5 +56,10 @@ func GetHostFlows(opt *GetHostFlowsOption) (HostFlows, error) {
 			})
 		}
 	}
+	if !opt.Numeric {
+		for _, flow := range flows {
+			flow.setLookupedName()
+		}
+	}
 	return flows, nil
 }

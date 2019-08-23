@@ -45,13 +45,17 @@ func (c FlowDirection) MarshalJSON() ([]byte, error) {
 
 // AddrPort are <addr>:<port>
 type AddrPort struct {
+	Name string `json:"name"`
 	Addr string `json:"addr"`
 	Port string `json:"port"`
 }
 
 // String returns the string representation of the AddrPort.
 func (a *AddrPort) String() string {
-	return net.JoinHostPort(a.Addr, a.Port)
+	if a.Name == "" {
+		return net.JoinHostPort(a.Addr, a.Port)
+	}
+	return net.JoinHostPort(a.Name, a.Port)
 }
 
 // PortInt returnts integer representation.
@@ -98,9 +102,10 @@ func (f *HostFlow) UniqKey() string {
 	return fmt.Sprintf("%d-%s-%s", f.Direction, f.Local, f.Peer)
 }
 
-// ReplaceLookupedName replaces f.Addr into lookuped name.
-func (f *HostFlow) ReplaceLookupedName() {
-	f.Peer.Addr = netutil.ResolveAddr(f.Peer.Addr)
+// setLookupedName replaces f.Addr into lookuped name.
+func (f *HostFlow) setLookupedName() {
+	f.Local.Name = netutil.ResolveAddr(f.Local.Addr)
+	f.Peer.Name = netutil.ResolveAddr(f.Peer.Addr)
 }
 
 // HostFlows represents a group of host flow by unique key.
@@ -138,6 +143,7 @@ func contains(strs []string, s string) bool {
 
 // GetHostFlowsOption represens an option for func GetHostFlows().
 type GetHostFlowsOption struct {
+	Numeric   bool
 	Processes bool
 	Filter    string
 }
