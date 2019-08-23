@@ -102,8 +102,8 @@ func (f *HostFlow) UniqKey() string {
 	return fmt.Sprintf("%d-%s-%s", f.Direction, f.Local, f.Peer)
 }
 
-// SetLookupedName replaces f.Addr into lookuped name.
-func (f *HostFlow) SetLookupedName() {
+// setLookupedName replaces f.Addr into lookuped name.
+func (f *HostFlow) setLookupedName() {
 	f.Local.Name = netutil.ResolveAddr(f.Local.Addr)
 	f.Peer.Name = netutil.ResolveAddr(f.Peer.Addr)
 }
@@ -143,6 +143,7 @@ func contains(strs []string, s string) bool {
 
 // GetHostFlowsOption represens an option for func GetHostFlows().
 type GetHostFlowsOption struct {
+	Numeric   bool
 	Processes bool
 	Filter    string
 }

@@ -117,6 +117,12 @@ func GetHostFlowsByNetlink(opt *GetHostFlowsOption) (HostFlows, error) {
 			flows.insert(hf)
 		}
 	}
+
+	if !opt.Numeric {
+		for _, flow := range flows {
+			flow.setLookupedName()
+		}
+	}
 	return flows, nil
 }
 

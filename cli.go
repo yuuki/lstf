@@ -105,6 +105,7 @@ func (c *CLI) Run(args []string) int {
 	flows, err := tcpflow.GetHostFlows(&tcpflow.GetHostFlowsOption{
 		Processes: processes,
 		Filter:    filter,
+		Numeric:   numeric,
 	})
 	if err != nil {
 		if dlog.Debug {
@@ -116,19 +117,19 @@ func (c *CLI) Run(args []string) int {
 	}
 
 	if json {
-		if err := c.PrintHostFlowsAsJSON(flows, numeric); err != nil {
+		if err := c.PrintHostFlowsAsJSON(flows); err != nil {
 			log.Printf("failed to print json: %v\n", err)
 			return exitCodeErr
 		}
 	} else {
-		c.PrintHostFlows(flows, numeric, processes)
+		c.PrintHostFlows(flows, processes)
 	}
 
 	return exitCodeOK
 }
 
 // PrintHostFlows prints the host flows.
-func (c *CLI) PrintHostFlows(flows tcpflow.HostFlows, numeric bool, processes bool) {
+func (c *CLI) PrintHostFlows(flows tcpflow.HostFlows, processes bool) {
 	// Format in tab-separated columns with a tab stop of 8.
 	tw := tabwriter.NewWriter(c.outStream, 0, 8, 0, '\t', 0)
 	fmt.Fprintf(tw, "Local Address:Port\t<-->\tPeer Address:Port\tConnections")
@@ -137,21 +138,13 @@ func (c *CLI) PrintHostFlows(flows tcpflow.HostFlows, numeric bool, processes bo
 	}
 	fmt.Fprintln(tw)
 	for _, flow := range flows {
-		if !numeric {
-			flow.SetLookupedName()
-		}
 		fmt.Fprintln(tw, flow)
 	}
 	tw.Flush()
 }
 
 // PrintHostFlowsAsJSON prints the host flows as json format.
-func (c *CLI) PrintHostFlowsAsJSON(flows tcpflow.HostFlows, numeric bool) error {
-	for _, flow := range flows {
-		if !numeric {
-			flow.SetLookupedName()
-		}
-	}
+func (c *CLI) PrintHostFlowsAsJSON(flows tcpflow.HostFlows) error {
 	b, err := json.Marshal(flows)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal json: %v", err)
