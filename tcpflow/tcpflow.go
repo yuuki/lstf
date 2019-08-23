@@ -104,6 +104,7 @@ func (f *HostFlow) UniqKey() string {
 
 // SetLookupedName replaces f.Addr into lookuped name.
 func (f *HostFlow) SetLookupedName() {
+	f.Local.Name = netutil.ResolveAddr(f.Local.Addr)
 	f.Peer.Name = netutil.ResolveAddr(f.Peer.Addr)
 }
 
