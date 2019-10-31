@@ -1,6 +1,6 @@
 module github.com/yuuki/lstf
 
-go 1.12
+go 1.13
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
