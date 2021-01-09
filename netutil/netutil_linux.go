@@ -16,11 +16,11 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/EricLagergren/go-gnulib/dirent"
 	"github.com/elastic/gosigar/sys/linux"
 	gnet "github.com/shirou/gopsutil/net"
+	"golang.org/x/sys/unix"
 	"golang.org/x/xerrors"
-
-	"github.com/yuuki/lstf/dlog"
 )
 
 // NetlinkError represents netlink error.
@@ -42,6 +42,7 @@ func NetlinkConnections() ([]*linux.InetDiagMsg, error) {
 	return msgs, nil
 }
 
+// UserEntByLport is a map that key is listening port, value is UserEnt structure.
 type UserEntByLport map[string]*UserEnt
 
 // NetlinkFilterByLocalListeningPorts filters ConnectionStat slice by the local listening ports.
@@ -59,7 +60,7 @@ func NetlinkFilterByLocalListeningPorts(conns []*linux.InetDiagMsg) ([]*linux.In
 	return lconns, nil
 }
 
-// NetlinkLodalListeningPorts returns the local listening ports.
+// NetlinkLocalListeningPorts returns the local listening ports.
 func NetlinkLocalListeningPorts() ([]string, error) {
 	msgs, err := NetlinkConnections()
 	if err != nil {
@@ -151,9 +152,8 @@ func decodeAddress(src string) (Addr, error) {
 	if err != nil {
 		return Addr{}, xerrors.Errorf("decode error, %s", err)
 	}
-	var ip net.IP
 	// Assumes this is little_endian
-	ip = net.IP(gnet.Reverse(decoded))
+	ip := net.IP(gnet.Reverse(decoded))
 	return Addr{
 		IP:   ip.String(),
 		Port: uint32(port),
@@ -221,21 +221,36 @@ func parseProcStat(root string, pid int) (*procStat, error) {
 	}, nil
 }
 
+const socketPrefix = "socket:["
+
+// parse inode number from 'socket:[<inode number>]'.
 func parseSocketInode(lnk string) (uint32, error) {
-	const pattern = "socket:["
-	ind := strings.Index(lnk, pattern)
+	ind := strings.Index(lnk, socketPrefix)
 	if ind == -1 {
 		return 0, nil
 	}
-	var ino uint32
-	n, err := fmt.Sscanf(lnk, "socket:[%d]", &ino)
+	open := ind + len(socketPrefix)
+	close := open + strings.Index(lnk[open:], "]")
+	if close == -1 {
+		return 0, xerrors.Errorf("'%s' should be the expected pattern '[socket:\\%d]'", lnk)
+	}
+	inode := lnk[open:close]
+	ino, err := strconv.ParseUint(inode, 10, 32)
 	if err != nil {
-		return 0, err
+		return 0, xerrors.Errorf("'%s' should be a number string", inode)
 	}
-	if n != 1 {
-		return 0, xerrors.Errorf("'%s' should be pattern '[socket:\\%d]'", lnk)
+	return uint32(ino), nil
+}
+
+func binaryToString(s []int8) string {
+	var buff bytes.Buffer
+	for _, chr := range s {
+		if chr == 0x00 { // remove null
+			break
+		}
+		buff.WriteByte(byte(chr))
 	}
-	return ino, nil
+	return buff.String()
 }
 
 // BuildUserEntries scans under /proc/%pid/fd/.
@@ -245,19 +260,31 @@ func BuildUserEntries() (UserEnts, error) {
 		root = "/proc"
 	}
 
-	dir, err := ioutil.ReadDir(root)
+	// Use dirent package instread of os.ReadDir for speeding up.
+	// see https://stackoverflow.com/questions/41419056/golang-os-file-readdir-using-lstat-on-all-files-can-it-be-optimised.
+	stream, err := dirent.Open(root)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("dirent.Open %s: %v", root, err)
 	}
+	defer stream.Close()
 
-	userEnts := make(UserEnts, 0)
+	userEnts := make(UserEnts)
 
-	for _, d := range dir {
-		// find only "<pid>"" directory
-		if !d.IsDir() {
+	for {
+		entry, err := stream.Read()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return nil, xerrors.Errorf("stream.Read %s: %v", root, err)
+		}
+		if entry.Type != unix.DT_DIR {
+			// find only "<pid>"" directory
 			continue
 		}
-		pid, err := strconv.Atoi(d.Name())
+		dirName := binaryToString(entry.Name[:])
+
+		pid, err := strconv.Atoi(dirName)
 		if err != nil {
 			continue
 		}
@@ -267,7 +294,7 @@ func BuildUserEntries() (UserEnts, error) {
 			continue
 		}
 
-		pidDir := filepath.Join(root, d.Name())
+		pidDir := filepath.Join(root, dirName)
 		fdDir := filepath.Join(pidDir, "fd")
 
 		// exists fd?
@@ -279,7 +306,7 @@ func BuildUserEntries() (UserEnts, error) {
 			continue
 		}
 
-		dir2, err := ioutil.ReadDir(fdDir)
+		fdStream, err := dirent.Open(fdDir)
 		if err != nil {
 			pathErr := err.(*os.PathError)
 			errno := pathErr.Err.(syscall.Errno)
@@ -287,17 +314,27 @@ func BuildUserEntries() (UserEnts, error) {
 				// ignore "open: <path> permission denied"
 				continue
 			}
-			return nil, xerrors.Errorf("readdir %s: %v", errno, err)
+			return nil, xerrors.Errorf("dirent.Open %s: %v", fdDir, err)
 		}
+		defer fdStream.Close()
 
 		var stat *procStat
 
-		for _, d2 := range dir2 {
-			fd, err := strconv.Atoi(d2.Name())
+		for {
+			fdEntry, err := fdStream.Read()
+			if err != nil {
+				if err == io.EOF {
+					break
+				}
+				return nil, xerrors.Errorf("fdStream.Read %s: %v", fdEntry, err)
+			}
+			fdName := binaryToString(fdEntry.Name[:])
+
+			fd, err := strconv.Atoi(fdName)
 			if err != nil {
 				continue
 			}
-			fdpath := filepath.Join(fdDir, d2.Name())
+			fdpath := filepath.Join(fdDir, fdName)
 			lnk, err := os.Readlink(fdpath)
 			if err != nil {
 				pathErr := err.(*os.PathError)
@@ -305,7 +342,6 @@ func BuildUserEntries() (UserEnts, error) {
 				if errno == syscall.ENOENT {
 					// ignore "readlink: no such file or directory"
 					// because fdpath is disappear depending on timing
-					dlog.Debugf("%v\n", pathErr)
 					continue
 				}
 				return nil, xerrors.Errorf("readlink %s: %v", fdpath, err)
