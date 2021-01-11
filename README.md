@@ -84,7 +84,7 @@ $ lstf --json | jq -r -M '.'
 
 ## License
 
-[MIT][license]
+[MIT](LICENSE)
 
 ## Author
 
