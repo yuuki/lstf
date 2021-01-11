@@ -74,7 +74,6 @@ func (c *CLI) Run(args []string) int {
 	flags.BoolVar(&numeric, "numeric", false, "")
 	flags.BoolVar(&processes, "p", false, "")
 	flags.BoolVar(&processes, "processes", false, "")
-	flags.BoolVar(&numeric, "", false, "")
 	flags.DurationVar(&watch, "w", -1, "")
 	flags.DurationVar(&watch, "watch", -1, "")
 	flags.BoolVar(&json, "json", false, "")
