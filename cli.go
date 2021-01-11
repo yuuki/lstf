@@ -3,22 +3,27 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
+	"os/signal"
 	"strconv"
 	"text/tabwriter"
+	"time"
+
+	flag "github.com/spf13/pflag"
+	"golang.org/x/xerrors"
 
 	"github.com/yuuki/lstf/dlog"
 	"github.com/yuuki/lstf/tcpflow"
-	"golang.org/x/xerrors"
 )
 
 const (
 	exitCodeOK  = 0
 	exitCodeErr = 10 + iota
+
+	defaultWatchDurationSec = 3
 )
 
 var (
@@ -56,6 +61,7 @@ func (c *CLI) Run(args []string) int {
 	var (
 		numeric   bool
 		processes bool
+		watch     int
 		json      bool
 		filter    string
 
@@ -68,14 +74,12 @@ func (c *CLI) Run(args []string) int {
 	flags.Usage = func() {
 		fmt.Fprint(c.errStream, helpText)
 	}
-	flags.BoolVar(&numeric, "n", false, "")
-	flags.BoolVar(&numeric, "numeric", false, "")
-	flags.BoolVar(&processes, "p", false, "")
-	flags.BoolVar(&processes, "processes", false, "")
-	flags.BoolVar(&numeric, "", false, "")
+	flags.BoolVarP(&numeric, "numeric", "n", false, "")
+	flags.BoolVarP(&processes, "processes", "p", false, "")
+	flags.IntVarP(&watch, "watch", "w", 0, "")
+	flags.Lookup("watch").NoOptDefVal = fmt.Sprint(defaultWatchDurationSec)
 	flags.BoolVar(&json, "json", false, "")
-	flags.StringVar(&filter, "f", tcpflow.FilterAll, "")
-	flags.StringVar(&filter, "filter", tcpflow.FilterAll, "")
+	flags.StringVarP(&filter, "filter", "f", tcpflow.FilterAll, "")
 	flags.BoolVar(&ver, "version", false, "")
 	flags.BoolVar(&credits, "credits", false, "")
 	flags.BoolVar(&debug, "debug", false, "")
@@ -102,6 +106,40 @@ func (c *CLI) Run(args []string) int {
 		return exitCodeErr
 	}
 
+	if watch == 0 { // no watch option
+		return c.run(processes, numeric, json, filter)
+	}
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, os.Kill)
+	defer signal.Stop(sig)
+
+	tick := time.NewTicker(time.Duration(watch) * time.Second)
+	defer tick.Stop()
+
+	fmt.Fprintf(c.outStream, "-- %s -- \n", time.Now().Format("15:04:05")) // print timestamp
+	ret := c.run(processes, numeric, json, filter)
+	if ret != exitCodeOK {
+		return ret
+	}
+	fmt.Fprintln(c.outStream) // print newline
+
+	for {
+		select {
+		case now := <-tick.C:
+			fmt.Fprintf(c.outStream, "-- %s -- \n", now.Format("15:04:05")) // print timestamp
+			ret := c.run(processes, numeric, json, filter)
+			if ret != exitCodeOK {
+				return ret
+			}
+			fmt.Fprintln(c.outStream) // print newline
+		case <-sig:
+			return exitCodeOK
+		}
+	}
+}
+
+func (c *CLI) run(processes, numeric, json bool, filter string) int {
 	flows, err := tcpflow.GetHostFlows(&tcpflow.GetHostFlowsOption{
 		Processes: processes,
 		Filter:    filter,
@@ -155,14 +193,16 @@ func (c *CLI) PrintHostFlowsAsJSON(flows tcpflow.HostFlows) error {
 
 var helpText = `Usage: lstf [options]
 
-  Print host flows between localhost and other hosts
+  Print TCP flows between localhost and other hosts
 
 Options:
-  --numeric, -n             show numerical addresses instead of trying to determine symbolic host names.
-  --processes, -p           show process using socket
-  --json                    print results as json format
-  --filter, -f              filter results by "all", "public" or "private" (default: "all")
-  --version, -v	            print version
-  --help, -h                print help
-  --credits                 print CREDITS
+  --numeric, -n             	show numerical addresses instead of trying to determine symbolic host names.
+  --processes, -p          	 	show process using socket
+  --json                    	print results as json format
+  --filter FILTER, -f FILTER	filter results by "all", "public" or "private" (default: "all")
+  --watch=SECONDS, -w=SECONDS	print periodically (SECONDS should be an interger like '3s')
+
+  --version, -v	            	print version
+  --help, -h                	print help
+  --credits                 	print CREDITS
 `
