@@ -109,10 +109,10 @@ func (c *CLI) Run(args []string) int {
 		return c.run(processes, numeric, json, filter)
 	}
 
-	timer := time.NewTimer(watch)
+	tick := time.NewTicker(watch)
 	for {
 		select {
-		case <-timer.C:
+		case <-tick.C:
 			ret := c.run(processes, numeric, json, filter)
 			if ret != exitCodeOK {
 				return ret
