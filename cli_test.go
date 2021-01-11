@@ -18,7 +18,7 @@ func TestRun_global(t *testing.T) {
 			desc:           "undefined flag",
 			arg:            "lstf --undefined",
 			expectedStatus: exitCodeErr,
-			expectedSubErr: "flag provided but not defined",
+			expectedSubErr: "",
 		},
 		{
 			desc:           "help",
