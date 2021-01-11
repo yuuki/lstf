@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"text/tabwriter"
+	"time"
 
 	"github.com/yuuki/lstf/dlog"
 	"github.com/yuuki/lstf/tcpflow"
@@ -56,6 +57,7 @@ func (c *CLI) Run(args []string) int {
 	var (
 		numeric   bool
 		processes bool
+		watch     time.Duration
 		json      bool
 		filter    string
 
@@ -73,6 +75,8 @@ func (c *CLI) Run(args []string) int {
 	flags.BoolVar(&processes, "p", false, "")
 	flags.BoolVar(&processes, "processes", false, "")
 	flags.BoolVar(&numeric, "", false, "")
+	flags.DurationVar(&watch, "w", -1, "")
+	flags.DurationVar(&watch, "watch", -1, "")
 	flags.BoolVar(&json, "json", false, "")
 	flags.StringVar(&filter, "f", tcpflow.FilterAll, "")
 	flags.StringVar(&filter, "filter", tcpflow.FilterAll, "")
@@ -102,6 +106,26 @@ func (c *CLI) Run(args []string) int {
 		return exitCodeErr
 	}
 
+	if watch == -1 {
+		return c.run(processes, numeric, json, filter)
+	}
+
+	timer := time.NewTimer(watch)
+	for {
+		select {
+		case <-timer.C:
+			ret := c.run(processes, numeric, json, filter)
+			if ret != exitCodeOK {
+				return ret
+			}
+		default:
+		}
+	}
+
+	return exitCodeOK
+}
+
+func (c *CLI) run(processes, numeric, json bool, filter string) int {
 	flows, err := tcpflow.GetHostFlows(&tcpflow.GetHostFlowsOption{
 		Processes: processes,
 		Filter:    filter,
