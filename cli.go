@@ -116,13 +116,23 @@ func (c *CLI) Run(args []string) int {
 
 	tick := time.NewTicker(watch)
 	defer tick.Stop()
+
+	fmt.Fprintf(c.outStream, "-- %s -- \n", time.Now().Format("15:04:05")) // print timestamp
+	ret := c.run(processes, numeric, json, filter)
+	if ret != exitCodeOK {
+		return ret
+	}
+	fmt.Fprintln(c.outStream) // print newline
+
 	for {
 		select {
-		case <-tick.C:
+		case now := <-tick.C:
+			fmt.Fprintf(c.outStream, "-- %s -- \n", now.Format("15:04:05")) // print timestamp
 			ret := c.run(processes, numeric, json, filter)
 			if ret != exitCodeOK {
-				break
+				return ret
 			}
+			fmt.Fprintln(c.outStream) // print newline
 		case <-sig:
 			return exitCodeOK
 		}
