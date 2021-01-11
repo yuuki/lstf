@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/signal"
 	"strconv"
 	"text/tabwriter"
 	"time"
@@ -109,19 +110,32 @@ func (c *CLI) Run(args []string) int {
 		return c.run(processes, numeric, json, filter)
 	}
 
-	tick := time.NewTicker(watch)
-	for {
-		select {
-		case <-tick.C:
-			ret := c.run(processes, numeric, json, filter)
-			if ret != exitCodeOK {
-				return ret
-			}
-		default:
-		}
-	}
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, os.Kill)
+	stopChan := make(chan struct{})
+	retChan := make(chan int, 1)
 
-	return exitCodeOK
+	go func() {
+		tick := time.NewTicker(watch)
+		for {
+			select {
+			case <-tick.C:
+				ret := c.run(processes, numeric, json, filter)
+				if ret != exitCodeOK {
+					retChan <- ret
+					break
+				}
+			case <-stopChan:
+				retChan <- exitCodeOK
+				break
+			default:
+			}
+		}
+	}()
+
+	<-sig
+	stopChan <- struct{}{}
+	return <-retChan
 }
 
 func (c *CLI) run(processes, numeric, json bool, filter string) int {
