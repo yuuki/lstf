@@ -1,6 +1,6 @@
 module github.com/yuuki/lstf
 
-go 1.13
+go 1.15
 
 require (
 	github.com/EricLagergren/go-gnulib v0.0.0-20191129172535-039a51fc60f4
