@@ -3,6 +3,7 @@
 package netutil
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/hex"
 	"fmt"
@@ -198,19 +199,55 @@ func parseProcStat(root string, pid int) (*procStat, error) {
 	defer f.Close()
 
 	var (
-		pid2  int
-		comm  string
-		state string
-		ppid  int
-		pgrp  int
+		comm string
+		ppid int
+		pgrp int
 	)
-	if _, err := fmt.Fscanf(f, "%d %s %s %d %d",
-		&pid2, &comm, &state, &ppid, &pgrp); err != nil {
-		return nil, xerrors.Errorf("could not scan '%s': %w", stat, err)
+
+	scanner := bufio.NewScanner(f)
+	scanner.Split(bufio.ScanWords)
+
+	// 1. pid
+	scanner.Scan()
+	if _, err := strconv.ParseInt(scanner.Text(), 10, 32); err != nil {
+		return nil, xerrors.Errorf("pid should be int '%s': %w", stat, err)
 	}
 
+	// 2. comm
+	for scanner.Scan() {
+		w := scanner.Text()
+		if comm == "" {
+			comm = w
+		} else {
+			comm += " " + w
+		}
+		if strings.HasSuffix(comm, ")") {
+			break
+		}
+	}
+	comm = comm[1 : len(comm)-2] // remove '(' and ')'
+
+	// 3. state
+	scanner.Scan()
+
+	// 4. ppid
+	scanner.Scan()
+	id, err := strconv.ParseInt(scanner.Text(), 10, 32)
+	if err != nil {
+		return nil, xerrors.Errorf("ppid should be int '%s': %w", stat, err)
+	}
+	ppid = int(id)
+
+	// 5. pgrp
+	scanner.Scan()
+	id, err = strconv.ParseInt(scanner.Text(), 10, 32)
+	if err != nil {
+		return nil, xerrors.Errorf("pgid should be int '%s': %w", stat, err)
+	}
+	pgrp = int(id)
+
 	return &procStat{
-		Pname: comm[1 : len(comm)-1], // remove '(' and ')'
+		Pname: comm,
 		Ppid:  ppid,
 		Pgrp:  pgrp,
 	}, nil
