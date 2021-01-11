@@ -204,18 +204,13 @@ func parseProcStat(root string, pid int) (*procStat, error) {
 		ppid  int
 		pgrp  int
 	)
-	if _, err := fmt.Fscan(f, &pid2, &comm, &state, &ppid, &pgrp); err != nil {
+	if _, err := fmt.Fscanf(f, "%d %s %s %d %d",
+		&pid2, &comm, &state, &ppid, &pgrp); err != nil {
 		return nil, xerrors.Errorf("could not scan '%s': %w", stat, err)
 	}
 
-	var pname string
-	// workaround: Sscanf return io.ErrUnexpectedEOF without knowing why.
-	if _, err := fmt.Sscanf(comm, "(%s)", &pname); err != nil && err != io.ErrUnexpectedEOF {
-		return nil, xerrors.Errorf("could not scan '%s': %w", comm, err)
-	}
-
 	return &procStat{
-		Pname: strings.TrimRight(pname, ")"),
+		Pname: comm[1 : len(comm)-1], // remove '(' and ')'
 		Ppid:  ppid,
 		Pgrp:  pgrp,
 	}, nil
