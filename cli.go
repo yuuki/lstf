@@ -22,6 +22,8 @@ import (
 const (
 	exitCodeOK  = 0
 	exitCodeErr = 10 + iota
+
+	defaultWatchDurationSec = 3
 )
 
 var (
@@ -59,7 +61,7 @@ func (c *CLI) Run(args []string) int {
 	var (
 		numeric   bool
 		processes bool
-		watch     time.Duration
+		watch     int
 		json      bool
 		filter    string
 
@@ -74,7 +76,8 @@ func (c *CLI) Run(args []string) int {
 	}
 	flags.BoolVarP(&numeric, "numeric", "n", false, "")
 	flags.BoolVarP(&processes, "processes", "p", false, "")
-	flags.DurationVarP(&watch, "watch", "w", -1, "")
+	flags.IntVarP(&watch, "watch", "w", 0, "")
+	flags.Lookup("watch").NoOptDefVal = fmt.Sprint(defaultWatchDurationSec)
 	flags.BoolVar(&json, "json", false, "")
 	flags.StringVarP(&filter, "filter", "f", tcpflow.FilterAll, "")
 	flags.BoolVar(&ver, "version", false, "")
@@ -103,7 +106,7 @@ func (c *CLI) Run(args []string) int {
 		return exitCodeErr
 	}
 
-	if watch == -1 {
+	if watch == 0 { // no watch option
 		return c.run(processes, numeric, json, filter)
 	}
 
@@ -111,7 +114,7 @@ func (c *CLI) Run(args []string) int {
 	signal.Notify(sig, os.Interrupt, os.Kill)
 	defer signal.Stop(sig)
 
-	tick := time.NewTicker(watch)
+	tick := time.NewTicker(time.Duration(watch) * time.Second)
 	defer tick.Stop()
 
 	fmt.Fprintf(c.outStream, "-- %s -- \n", time.Now().Format("15:04:05")) // print timestamp
@@ -190,15 +193,16 @@ func (c *CLI) PrintHostFlowsAsJSON(flows tcpflow.HostFlows) error {
 
 var helpText = `Usage: lstf [options]
 
-  Print host flows between localhost and other hosts
+  Print TCP flows between localhost and other hosts
 
 Options:
-  --numeric, -n             show numerical addresses instead of trying to determine symbolic host names.
-  --processes, -p           show process using socket
-  --json                    print results as json format
-  --filter, -f FILTER       filter results by "all", "public" or "private" (default: "all")
-  --watch, -w DURATION      print periodically (DURATION should be like '3s')
-  --version, -v	            print version
-  --help, -h                print help
-  --credits                 print CREDITS
+  --numeric, -n             	show numerical addresses instead of trying to determine symbolic host names.
+  --processes, -p          	 	show process using socket
+  --json                    	print results as json format
+  --filter FILTER, -f FILTER	filter results by "all", "public" or "private" (default: "all")
+  --watch-SECONDS, -w=SECONDS	print periodically (SECONDS should be an interger like '3s')
+
+  --version, -v	            	print version
+  --help, -h                	print help
+  --credits                 	print CREDITS
 `
