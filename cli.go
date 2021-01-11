@@ -184,7 +184,8 @@ Options:
   --numeric, -n             show numerical addresses instead of trying to determine symbolic host names.
   --processes, -p           show process using socket
   --json                    print results as json format
-  --filter, -f              filter results by "all", "public" or "private" (default: "all")
+  --filter, -f FILTER       filter results by "all", "public" or "private" (default: "all")
+  --watch, -w DURATION      print periodically (DURATION should be like '3s')
   --version, -v	            print version
   --help, -h                print help
   --credits                 print CREDITS
