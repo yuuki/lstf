@@ -200,7 +200,7 @@ Options:
   --processes, -p          	 	show process using socket
   --json                    	print results as json format
   --filter FILTER, -f FILTER	filter results by "all", "public" or "private" (default: "all")
-  --watch-SECONDS, -w=SECONDS	print periodically (SECONDS should be an interger like '3s')
+  --watch=SECONDS, -w=SECONDS	print periodically (SECONDS should be an interger like '3s')
 
   --version, -v	            	print version
   --help, -h                	print help
