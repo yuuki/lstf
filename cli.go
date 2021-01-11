@@ -112,30 +112,21 @@ func (c *CLI) Run(args []string) int {
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, os.Kill)
-	stopChan := make(chan struct{})
-	retChan := make(chan int, 1)
+	defer signal.Stop(sig)
 
-	go func() {
-		tick := time.NewTicker(watch)
-		for {
-			select {
-			case <-tick.C:
-				ret := c.run(processes, numeric, json, filter)
-				if ret != exitCodeOK {
-					retChan <- ret
-					break
-				}
-			case <-stopChan:
-				retChan <- exitCodeOK
+	tick := time.NewTicker(watch)
+	defer tick.Stop()
+	for {
+		select {
+		case <-tick.C:
+			ret := c.run(processes, numeric, json, filter)
+			if ret != exitCodeOK {
 				break
-			default:
 			}
+		case <-sig:
+			return exitCodeOK
 		}
-	}()
-
-	<-sig
-	stopChan <- struct{}{}
-	return <-retChan
+	}
 }
 
 func (c *CLI) run(processes, numeric, json bool, filter string) int {
