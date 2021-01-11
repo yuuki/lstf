@@ -3,7 +3,6 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -13,9 +12,11 @@ import (
 	"text/tabwriter"
 	"time"
 
+	flag "github.com/spf13/pflag"
+	"golang.org/x/xerrors"
+
 	"github.com/yuuki/lstf/dlog"
 	"github.com/yuuki/lstf/tcpflow"
-	"golang.org/x/xerrors"
 )
 
 const (
@@ -71,15 +72,11 @@ func (c *CLI) Run(args []string) int {
 	flags.Usage = func() {
 		fmt.Fprint(c.errStream, helpText)
 	}
-	flags.BoolVar(&numeric, "n", false, "")
-	flags.BoolVar(&numeric, "numeric", false, "")
-	flags.BoolVar(&processes, "p", false, "")
-	flags.BoolVar(&processes, "processes", false, "")
-	flags.DurationVar(&watch, "w", -1, "")
-	flags.DurationVar(&watch, "watch", -1, "")
+	flags.BoolVarP(&numeric, "numeric", "n", false, "")
+	flags.BoolVarP(&processes, "processes", "p", false, "")
+	flags.DurationVarP(&watch, "watch", "w", -1, "")
 	flags.BoolVar(&json, "json", false, "")
-	flags.StringVar(&filter, "f", tcpflow.FilterAll, "")
-	flags.StringVar(&filter, "filter", tcpflow.FilterAll, "")
+	flags.StringVarP(&filter, "filter", "f", tcpflow.FilterAll, "")
 	flags.BoolVar(&ver, "version", false, "")
 	flags.BoolVar(&credits, "credits", false, "")
 	flags.BoolVar(&debug, "debug", false, "")
