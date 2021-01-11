@@ -225,7 +225,7 @@ func parseProcStat(root string, pid int) (*procStat, error) {
 			break
 		}
 	}
-	comm = comm[1 : len(comm)-2] // remove '(' and ')'
+	comm = comm[1 : len(comm)-1] // remove '(' and ')'
 
 	// 3. state
 	scanner.Scan()
