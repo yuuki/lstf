@@ -1,5 +1,15 @@
 # Changelog
 
+## [v0.7.0](https://github.com/yuuki/lstf/compare/v0.6.0...v0.7.0) (2021-01-11)
+
+* Migrate CI to GitHub Action [#27](https://github.com/yuuki/lstf/pull/27) ([yuuki](https://github.com/yuuki))
+* Watch mode [#24](https://github.com/yuuki/lstf/pull/24) ([yuuki](https://github.com/yuuki))
+* fix an error of parsing comm including white spaces [#26](https://github.com/yuuki/lstf/pull/26) ([yuuki](https://github.com/yuuki))
+* Fix an error of parsing spesific comm pattern [#25](https://github.com/yuuki/lstf/pull/25) ([yuuki](https://github.com/yuuki))
+* improving resource utilization [#23](https://github.com/yuuki/lstf/pull/23) ([yuuki](https://github.com/yuuki))
+* Go 1.13 and updating some modules [#21](https://github.com/yuuki/lstf/pull/21) ([yuuki](https://github.com/yuuki))
+* Display both name and ipaddr [#20](https://github.com/yuuki/lstf/pull/20) ([yuuki](https://github.com/yuuki))
+
 ## [v0.6.0](https://github.com/yuuki/lstf/compare/v0.5.4...v0.6.0) (2019-08-20)
 
 * --filter option [#19](https://github.com/yuuki/lstf/pull/19) ([yuuki](https://github.com/yuuki))
