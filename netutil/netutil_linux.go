@@ -87,7 +87,7 @@ type Addr struct {
 	Port uint32 `json:"port"`
 }
 
-// ConnectionStat represents staticstics for a connection.
+// ConnectionStat represents statistics for a connection.
 type ConnectionStat struct {
 	Laddr  Addr
 	Raddr  Addr
