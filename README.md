@@ -1,5 +1,4 @@
 # lstf
-[![Build Status](https://travis-ci.org/yuuki/lstf.svg?branch=master)](https://travis-ci.org/yuuki/lstf)
 [![Latest Version](http://img.shields.io/github/release/yuuki/lstf.svg?style=flat-square)](https://github.com/yuuki/lstf/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/yuuki/lstf)](https://goreportcard.com/report/github.com/yuuki/lstf)
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
