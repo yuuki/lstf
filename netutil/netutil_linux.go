@@ -333,7 +333,9 @@ func BuildUserEntries() (UserEnts, error) {
 		fi, err := os.Stat(fdDir)
 		switch {
 		case err != nil:
-			return nil, xerrors.Errorf("stat %s: %v", fdDir, err)
+			// ignore ENOENT error
+			// ENOENT error occurs when the fd has already closed due to short-lived connection
+			continue
 		case !fi.IsDir():
 			continue
 		}
