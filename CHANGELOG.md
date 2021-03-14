@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.7.2](https://github.com/yuuki/lstf/compare/v0.7.1...v0.7.2) (2021-03-14)
+
+* fix ENOENT error because of TOCTOU [#31](https://github.com/yuuki/lstf/pull/31) ([yuuki](https://github.com/yuuki))
+
 ## [v0.7.1](https://github.com/yuuki/lstf/compare/v0.7.0...v0.7.1) (2021-03-14)
 
 * avoid too many open files error [#30](https://github.com/yuuki/lstf/pull/30) ([yuuki](https://github.com/yuuki))
