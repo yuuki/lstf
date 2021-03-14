@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"syscall"
 	"text/tabwriter"
 	"time"
 
@@ -106,6 +107,11 @@ func (c *CLI) Run(args []string) int {
 		return exitCodeErr
 	}
 
+	if err := setRLimitNoFile(); err != nil {
+		fmt.Fprintf(c.errStream, "%v", err)
+		return exitCodeErr
+	}
+
 	if watch == 0 { // no watch option
 		return c.run(processes, numeric, json, filter)
 	}
@@ -188,6 +194,26 @@ func (c *CLI) PrintHostFlowsAsJSON(flows tcpflow.HostFlows) error {
 		return xerrors.Errorf("failed to marshal json: %v", err)
 	}
 	c.outStream.Write(b)
+	return nil
+}
+
+// setRLimitNoFile avoids too many open files error.
+func setRLimitNoFile() error {
+	var rLimit syscall.Rlimit
+
+	err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rLimit)
+	if err != nil {
+		return xerrors.Errorf("could not get rlimit: %w", err)
+	}
+
+	if rLimit.Cur < rLimit.Max {
+		rLimit.Cur = rLimit.Max
+		err = syscall.Setrlimit(syscall.RLIMIT_NOFILE, &rLimit)
+		if err != nil {
+			return xerrors.Errorf("could not set rlimit: %w", err)
+		}
+	}
+
 	return nil
 }
 
