@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.7.1](https://github.com/yuuki/lstf/compare/v0.7.0...v0.7.1) (2021-03-14)
+
+* avoid too many open files error [#30](https://github.com/yuuki/lstf/pull/30) ([yuuki](https://github.com/yuuki))
+* fix typo [#29](https://github.com/yuuki/lstf/pull/29) ([dmitris](https://github.com/dmitris))
+* bump version Go 1.15 [#28](https://github.com/yuuki/lstf/pull/28) ([yuuki](https://github.com/yuuki))
+
 ## [v0.7.0](https://github.com/yuuki/lstf/compare/v0.6.0...v0.7.0) (2021-01-11)
 
 * Migrate CI to GitHub Action [#27](https://github.com/yuuki/lstf/pull/27) ([yuuki](https://github.com/yuuki))
